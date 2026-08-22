@@ -1,0 +1,39 @@
+# Virtual environment
+venv/
+.venv/
+env/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.Python
+build/
+develop-eggs/
+dist/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Google OAuth
+credentials.json
+token.json
+
+# Gmail state tracking
+gmail_state.json
+
+# Environment variables
+.env
+
+# Downloaded attachments
+downloads/*
+!downloads/.gitkeep
+
+# OS
+.DS_Store
+.env.local
