@@ -34,6 +34,11 @@ gmail_state.json
 downloads/*
 !downloads/.gitkeep
 
+# Extracted/redacted attachment text -- still derived from real financial
+# documents, keep it out of version control the same as downloads/
+processed/*
+!processed/.gitkeep
+
 # OS
 .DS_Store
 .env.local

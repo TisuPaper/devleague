@@ -27,10 +27,27 @@ class Settings(BaseSettings):
     
     # File paths
     DOWNLOAD_DIR: str = "downloads"
+    PROCESSED_DIR: str = "processed"
     CREDENTIALS_FILE: str = "credentials.json"
     TOKEN_FILE: str = "token.json"
     STATE_FILE: str = "gmail_state.json"
-    
+
+    # Reject attachments larger than this before extraction, as a guard
+    # against decompression-bomb style files (e.g. a tiny .xlsx that expands
+    # to gigabytes) tying up the server on untrusted, sender-supplied input.
+    MAX_ATTACHMENT_SIZE_MB: int = 25
+
+    # Gemini API settings for the financial-analysis step. Leave
+    # GEMINI_API_KEY blank to skip AI analysis entirely (pipeline still runs
+    # extraction/redaction and logs that analysis was skipped).
+    GEMINI_API_KEY: str = ""
+    GEMINI_MODEL: str = "gemini-3.6-flash"
+
+    # Comma-separated sender-domain allowlist (e.g. "n2nconnect.com,other.com").
+    # Blank (default) means no filtering -- every message in the watched
+    # inbox gets processed. Case-insensitive.
+    ALLOWED_SENDER_DOMAINS: str = ""
+
     class Config:
         env_file = ".env"
         env_file_encoding = "utf-8"
@@ -45,5 +62,5 @@ def get_settings() -> Settings:
 def ensure_directories():
     """Ensure required directories exist"""
     settings = get_settings()
-    download_dir = Path(settings.DOWNLOAD_DIR)
-    download_dir.mkdir(exist_ok=True)
+    Path(settings.DOWNLOAD_DIR).mkdir(exist_ok=True)
+    Path(settings.PROCESSED_DIR).mkdir(exist_ok=True)

@@ -6,3 +6,7 @@ google-auth-oauthlib
 google-auth-httplib2
 pydantic-settings
 python-dotenv
+pypdf
+openpyxl
+xlrd
+google-genai
