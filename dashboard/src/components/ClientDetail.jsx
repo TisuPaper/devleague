@@ -134,7 +134,15 @@ const ClientDetail = ({ client, activeSubTab, setActiveSubTab, onSelectDifferent
       <div role="tabpanel">
         {activeSubTab === 'overview'
           ? <ClientOverview client={client} />
-          : <AnalysisWorkspace client={client} activeSubTab={activeSubTab} />
+          : <AnalysisWorkspace
+              /* AnalysisWorkspace copies client.issues into local state on
+                 mount, so remount it when the backend reports new processing
+                 results. This key is constant for demo clients (no
+                 documentsReceived / activity growth), leaving them untouched. */
+              key={`${client.domain}-${client.documentsReceived ?? 'demo'}-${client.activity?.length ?? 0}`}
+              client={client}
+              activeSubTab={activeSubTab}
+            />
         }
       </div>
     </div>

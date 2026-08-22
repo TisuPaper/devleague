@@ -1,0 +1,40 @@
+/* Backend connection indicator, shown above the client list. */
+
+.live-status-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 8px 14px;
+  margin-bottom: var(--spacing-md);
+  border-radius: var(--rounded-md);
+  border: 1px solid var(--hairline);
+  background: var(--surface);
+  font-size: 13px;
+  color: var(--ink-secondary);
+}
+
+.lsb-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.lsb-dot-live { background: var(--accent-green); }
+.lsb-dot-idle { background: var(--ink-muted); }
+.lsb-dot-down { background: var(--accent-orange-deep); }
+
+.lsb-text { font-weight: 500; color: var(--ink); }
+
+.lsb-hint { color: var(--ink-secondary); }
+
+.lsb-hint code {
+  background: var(--canvas-soft);
+  padding: 1px 6px;
+  border-radius: var(--rounded-xs);
+  font-size: 12px;
+}
+
+.lsb-ready { border-color: color-mix(in srgb, var(--accent-green) 32%, transparent); }
+.lsb-error { border-color: color-mix(in srgb, var(--accent-orange) 38%, transparent); }

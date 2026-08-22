@@ -22,13 +22,23 @@ async def lifespan(app: FastAPI):
     # Startup
     logger.info("Starting Financial Email Receiver API")
     ensure_directories()
-    if not get_settings().PUBSUB_VERIFICATION_TOKEN:
-        logger.warning(
-            "PUBSUB_VERIFICATION_TOKEN is not set - the /api/webhooks/gmail endpoint "
-            "will accept unauthenticated requests from anyone who has the URL. "
-            "Fine for local hackathon testing; set it before exposing the endpoint "
-            "beyond your own machine."
-        )
+    settings = get_settings()
+    if not settings.PUBSUB_VERIFICATION_TOKEN:
+        if settings.ENVIRONMENT.strip().lower() == "development":
+            logger.warning(
+                "PUBSUB_VERIFICATION_TOKEN is not set - the /api/webhooks/gmail endpoint "
+                "will accept unauthenticated requests from anyone who has the URL. "
+                "Fine for local hackathon testing; set it before exposing the endpoint "
+                "beyond your own machine."
+            )
+        else:
+            logger.error(
+                "PUBSUB_VERIFICATION_TOKEN is NOT SET while ENVIRONMENT=%s. The public "
+                "/api/webhooks/gmail endpoint will accept requests from anyone who "
+                "discovers the URL, letting them trigger Gmail reads and billed Gemini "
+                "calls. Set it now and add ?token=<value> to the Pub/Sub push endpoint.",
+                settings.ENVIRONMENT,
+            )
 
     yield
     
@@ -39,15 +49,24 @@ async def lifespan(app: FastAPI):
 def create_app() -> FastAPI:
     """Create and configure FastAPI application"""
     settings = get_settings()
-    
+
+    # Once this is reachable from the internet, the interactive API docs hand a
+    # stranger a full map of the routes (and a button to fire the webhook), and
+    # debug mode returns stack traces that leak file paths and internals. Both
+    # are disabled outside development regardless of what DEBUG is set to.
+    is_production = settings.ENVIRONMENT.strip().lower() != "development"
+
     app = FastAPI(
         title=settings.APP_NAME,
         description="Email receiving foundation with Gmail OAuth and Pub/Sub integration",
         version="0.1.0",
         lifespan=lifespan,
-        debug=settings.DEBUG,
+        debug=settings.DEBUG and not is_production,
+        docs_url=None if is_production else "/docs",
+        redoc_url=None if is_production else "/redoc",
+        openapi_url=None if is_production else "/openapi.json",
     )
-    
+
     # Add CORS middleware for local development. 5173/4173 are Vite's dev and
     # preview ports for the dashboard frontend. Explicit origins only -- never
     # a wildcard, since allow_credentials is on.

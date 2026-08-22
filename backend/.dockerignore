@@ -1,0 +1,17 @@
+# Never bake secrets or local state into the image -- these are provided at
+# runtime via the mounted volume / env file instead.
+.env
+.env.local
+credentials.json
+token.json
+gmail_state.json
+downloads/
+processed/
+
+venv/
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+.DS_Store
+README.md

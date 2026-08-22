@@ -11,6 +11,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
+from app.core.config import get_settings
+
 logger = logging.getLogger(__name__)
 
 # Canonical required documents, in the order the dashboard lists them. The
@@ -88,8 +90,25 @@ def _doc_type_label(filename: str) -> str:
     return EXTENSION_TO_TYPE_LABEL.get(Path(filename).suffix.lower(), 'File')
 
 
+def _parse_domain_map(raw: str) -> Dict[str, str]:
+    """Parse a "domain=Value,domain2=Value 2" setting into a lookup dict."""
+    mapping: Dict[str, str] = {}
+    for pair in (raw or '').split(','):
+        if '=' not in pair:
+            continue
+        domain, _, value = pair.partition('=')
+        domain = domain.strip().lower()
+        value = value.strip()
+        if domain and value:
+            mapping[domain] = value
+    return mapping
+
+
 def _company_name(records: List[Dict[str, Any]], domain: str) -> str:
-    """Prefer a company name the AI read out of a document; fall back to the domain."""
+    """Resolve a display name: configured override, then AI-read name, then domain."""
+    override = _parse_domain_map(get_settings().CLIENT_DISPLAY_NAMES).get(domain.lower())
+    if override:
+        return override
     for doc in records:
         analysis = doc.get('analysis') or {}
         name = (analysis.get('company_name') or '').strip()
@@ -98,7 +117,10 @@ def _company_name(records: List[Dict[str, Any]], domain: str) -> str:
     return domain
 
 
-def _industry(records: List[Dict[str, Any]]) -> str:
+def _industry(records: List[Dict[str, Any]], domain: str) -> str:
+    override = _parse_domain_map(get_settings().CLIENT_INDUSTRIES).get(domain.lower())
+    if override:
+        return override
     for doc in records:
         analysis = doc.get('analysis') or {}
         industry = (analysis.get('industry') or '').strip()
@@ -154,8 +176,32 @@ def _unreadable_email(company: str, filename: str) -> Dict[str, str]:
     }
 
 
-def _section_content(section: str, docs_by_type: Dict[str, Dict[str, Any]]) -> Optional[str]:
-    """Build real report-section text from the AI analysis actually available."""
+def _figure_lines(analysis: Dict[str, Any]) -> List[str]:
+    lines = []
+    for fig in analysis.get('key_figures') or []:
+        label = (fig.get('label') or '').strip()
+        value = (fig.get('value') or '').strip()
+        period = (fig.get('period') or '').strip()
+        if label and value:
+            lines.append(f"  {label}: {value}" + (f"  ({period})" if period else ''))
+    return lines
+
+
+def _section_content(
+    section: str,
+    docs_by_type: Dict[str, Dict[str, Any]],
+    other_docs: Optional[List[Dict[str, Any]]] = None,
+) -> Optional[str]:
+    """Build real report-section text from the AI analysis actually available.
+
+    `other_docs` are readable documents the model classified as "other" -- not
+    one of the six required statements. Their analysis still gets surfaced
+    here rather than discarded: it was produced from a document the client
+    actually sent, and dropping it would mean paying for analysis the user
+    never sees.
+    """
+    other_docs = other_docs or []
+
     if section == 'executive_summary':
         parts = []
         for doc_type, label in REQUIRED_DOCUMENTS:
@@ -164,6 +210,23 @@ def _section_content(section: str, docs_by_type: Dict[str, Dict[str, Any]]) -> O
             summary = (analysis.get('summary') or '').strip()
             if summary:
                 parts.append(f"{label}: {summary}")
+
+        for doc in other_docs:
+            analysis = doc.get('analysis') or {}
+            summary = (analysis.get('summary') or '').strip()
+            if not summary:
+                continue
+            filename = doc.get('filename') or 'attachment'
+            period = (analysis.get('period') or '').strip()
+            header = f"{filename} (not one of the six required statements"
+            header += f"; reporting period {period})" if period else ")"
+            block = [header, summary]
+            figures = _figure_lines(analysis)
+            if figures:
+                block.append('\nKey figures:')
+                block.extend(figures)
+            parts.append('\n'.join(block))
+
         return '\n\n'.join(parts) if parts else None
 
     if section == 'recommendations':
@@ -173,6 +236,11 @@ def _section_content(section: str, docs_by_type: Dict[str, Dict[str, Any]]) -> O
             analysis = (doc or {}).get('analysis') or {}
             for flag in analysis.get('risk_flags') or []:
                 flags.append(f"  • [{label}] {flag}")
+        for doc in other_docs:
+            analysis = doc.get('analysis') or {}
+            filename = doc.get('filename') or 'attachment'
+            for flag in analysis.get('risk_flags') or []:
+                flags.append(f"  • [{filename}] {flag}")
         if flags:
             return (
                 "Points requiring attention, drawn from the risk flags identified in "
@@ -230,14 +298,19 @@ def build_client_view(record: Dict[str, Any], now: Optional[datetime] = None) ->
 
     docs_by_type: Dict[str, Dict[str, Any]] = {}
     unreadable: List[Dict[str, Any]] = []
+    other_readable: List[Dict[str, Any]] = []
     for doc in sorted_docs:
         analysis = doc.get('analysis') or {}
         doc_type = analysis.get('document_type') or 'other'
         readable = bool(analysis.get('readable')) and doc.get('extraction_ok', False)
         if not doc.get('extraction_ok', False) or (analysis and not analysis.get('readable')):
             unreadable.append(doc)
-        if doc_type in DOCUMENT_TYPE_LABELS and readable and doc_type not in docs_by_type:
-            docs_by_type[doc_type] = doc
+        elif doc_type in DOCUMENT_TYPE_LABELS:
+            if readable and doc_type not in docs_by_type:
+                docs_by_type[doc_type] = doc
+        elif readable and analysis:
+            # Readable, analysed, but not one of the six required statements.
+            other_readable.append(doc)
 
     company = _company_name(sorted_docs, domain)
 
@@ -316,14 +389,14 @@ def build_client_view(record: Dict[str, Any], now: Optional[datetime] = None) ->
         if section == 'recommendations' and not all_present:
             locked_sections.append(section)
             continue
-        content = _section_content(section, docs_by_type)
+        content = _section_content(section, docs_by_type, other_readable)
         if content:
             sections[section] = content
             ready_sections.append(section)
         else:
             locked_sections.append(section)
 
-    if not docs_by_type:
+    if not docs_by_type and not other_readable:
         report_status = 'awaiting'
     elif not locked_sections:
         report_status = 'complete'
@@ -342,12 +415,18 @@ def build_client_view(record: Dict[str, Any], now: Optional[datetime] = None) ->
         elif not analysis:
             note = f"{filename} extracted and PII-redacted (AI analysis unavailable)"
             kind = 'info'
-        else:
-            type_label = DOCUMENT_TYPE_LABELS.get(
-                analysis.get('document_type'), 'Unclassified document'
-            )
+        elif analysis.get('document_type') in DOCUMENT_TYPE_LABELS:
+            type_label = DOCUMENT_TYPE_LABELS[analysis['document_type']]
             note = f"{filename} processed and classified as {type_label}"
             kind = 'success'
+        else:
+            # Analysed successfully, but not one of the six required statements.
+            # Say so explicitly rather than implying the document was rejected.
+            note = (
+                f"{filename} analysed — not one of the six required statements, "
+                "included in the executive summary"
+            )
+            kind = 'info'
         activity.append({
             'id': f"a{i}",
             'timestamp': _relative_label(received, now),
@@ -369,7 +448,7 @@ def build_client_view(record: Dict[str, Any], now: Optional[datetime] = None) ->
         'id': domain.replace('.', '-'),
         'domain': domain,
         'companyName': company,
-        'industry': _industry(sorted_docs),
+        'industry': _industry(sorted_docs, domain),
         'contactEmail': record.get('contact_email', ''),
         'isGenericDomain': bool(record.get('is_generic_domain')),
         'status': status,
@@ -387,6 +466,15 @@ def build_client_view(record: Dict[str, Any], now: Optional[datetime] = None) ->
         },
         'activity': activity,
         'documentsReceived': len(sorted_docs),
+        # Readable documents analysed but outside the six required statements.
+        'otherDocuments': [
+            {
+                'filename': doc.get('filename'),
+                'period': ((doc.get('analysis') or {}).get('period') or '').strip(),
+                'summary': ((doc.get('analysis') or {}).get('summary') or '').strip(),
+            }
+            for doc in other_readable
+        ],
     }
 
 

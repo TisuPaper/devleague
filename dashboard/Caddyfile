@@ -1,0 +1,44 @@
+# Caddy config for the deployed demo.
+#
+# SITE_ADDRESS is substituted from the environment (see docker-compose.yml).
+# Set it to your domain (e.g. exia.example.com) and Caddy provisions a real
+# Let's Encrypt certificate automatically. Google Pub/Sub push REQUIRES a
+# publicly-valid TLS certificate -- a self-signed cert will be rejected, which
+# is why a real domain is needed rather than a bare IP address.
+{$SITE_ADDRESS} {
+	encode zstd gzip
+
+	# Backend API. Everything under /api goes to the FastAPI container.
+	handle /api/* {
+		reverse_proxy backend:8000 {
+			# The webhook does real work (Gmail fetch + Gemini call) before
+			# responding; give it room rather than cutting the request off.
+			transport http {
+				response_header_timeout 120s
+			}
+		}
+	}
+
+	# Static dashboard, with SPA fallback to index.html
+	handle {
+		root * /srv
+		try_files {path} /index.html
+		file_server
+	}
+
+	# Basic hardening headers. The dashboard is self-contained (no CDN), so a
+	# tight CSP is practical here.
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		Referrer-Policy "no-referrer"
+		Content-Security-Policy "default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
+		-Server
+	}
+
+	log {
+		output stdout
+		format console
+	}
+}

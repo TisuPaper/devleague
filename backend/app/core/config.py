@@ -48,6 +48,15 @@ class Settings(BaseSettings):
     # inbox gets processed. Case-insensitive.
     ALLOWED_SENDER_DOMAINS: str = ""
 
+    # Optional display names for known client domains, so the dashboard can
+    # show a proper legal entity name instead of a bare domain. Format:
+    # "domain=Name,domain2=Name 2". Only affects presentation -- the domain
+    # remains the identifier everything is keyed on.
+    CLIENT_DISPLAY_NAMES: str = "n2nconnect.com=N2NConnect Sdn Bhd"
+
+    # Optional industry labels per domain, same format as CLIENT_DISPLAY_NAMES.
+    CLIENT_INDUSTRIES: str = "n2nconnect.com=Financial Technology"
+
     class Config:
         env_file = ".env"
         env_file_encoding = "utf-8"

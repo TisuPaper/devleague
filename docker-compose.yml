@@ -1,0 +1,60 @@
+# Single-host deployment for the Exia demo.
+#
+#   web     - Caddy: TLS termination, static dashboard, /api reverse proxy
+#   backend - FastAPI: Gmail webhook + extraction/redaction/AI pipeline
+#
+# Start with:  docker compose up -d --build
+# See backend/README.md "Deploying to a single host" for the full runbook.
+
+services:
+  web:
+    build:
+      context: ./dashboard
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      # Your public domain, e.g. SITE_ADDRESS=exia.example.com
+      # Pub/Sub push requires a publicly-valid cert, so this must be a real
+      # hostname pointed at this host -- not an IP.
+      SITE_ADDRESS: ${SITE_ADDRESS:?set SITE_ADDRESS to your public domain}
+    volumes:
+      # Persist issued certificates so restarts don't re-request from
+      # Let's Encrypt (which rate-limits).
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - backend
+
+  backend:
+    build:
+      context: ./backend
+    restart: unless-stopped
+    # No published ports: only reachable through the web container. Keeps the
+    # API off the public internet except via Caddy (which enforces TLS).
+    expose:
+      - "8000"
+    env_file:
+      - ./backend/.env
+    environment:
+      # Turns off /docs, /redoc, /openapi.json and debug stack traces.
+      ENVIRONMENT: production
+      DEBUG: "false"
+    volumes:
+      # OAuth token + Gmail history cursor. Provisioned by you before first
+      # start (see runbook) -- the interactive OAuth flow cannot run headless.
+      - ./backend/token.json:/app/token.json
+      - ./backend/credentials.json:/app/credentials.json:ro
+      - backend_state:/app/state
+      # Downloaded attachments and derived analysis. On a named volume so a
+      # container rebuild doesn't discard processed results.
+      - backend_downloads:/app/downloads
+      - backend_processed:/app/processed
+
+volumes:
+  caddy_data:
+  caddy_config:
+  backend_state:
+  backend_downloads:
+  backend_processed:

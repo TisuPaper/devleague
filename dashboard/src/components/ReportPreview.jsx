@@ -113,7 +113,13 @@ const ReportPreview = ({ report, reportSent, onApprove }) => {
               {isExpanded && (
                 <div className="report-section-body">
                   <pre className="report-section-content">
-                    {SECTION_CONTENT[sectionKey] || 'Content not available.'}
+                    {/* Real backend-generated analysis wins when present
+                        (report.sections). Demo records have no `sections`
+                        field and fall through to the sample content below,
+                        unchanged. */}
+                    {report.sections?.[sectionKey]
+                      ?? SECTION_CONTENT[sectionKey]
+                      ?? 'Content not available.'}
                   </pre>
                 </div>
               )}

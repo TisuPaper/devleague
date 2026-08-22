@@ -13,6 +13,14 @@ const AnalysisWorkspace = ({ client, activeSubTab }) => {
   const docsTotal = client.documents.length;
   const openIssues = issues.filter(i => !i.emailSent).length;
 
+  // Show the workspace when there is anything real to show. A client can have
+  // 0 of the 6 required statements yet still have generated analysis -- e.g. an
+  // annual report the model classified as "other". Gating purely on
+  // docsComplete would hide that analysis entirely. Demo records are
+  // unaffected: they have no generated sections beyond their document status.
+  const hasGeneratedSections = (client.report.readySections?.length ?? 0) > 0;
+  const hasWorkspaceContent = docsComplete > 0 || hasGeneratedSections;
+
   const handleEmailSent = (issueId) => {
     setIssues(prev => prev.map(i =>
       i.id === issueId ? { ...i, emailSent: true, sentAt: 'Just now' } : i
@@ -68,8 +76,8 @@ const AnalysisWorkspace = ({ client, activeSubTab }) => {
         )}
       </div>
 
-      {/* If no documents submitted yet */}
-      {docsComplete === 0 && (
+      {/* If nothing has been received or analysed yet */}
+      {!hasWorkspaceContent && (
         <div className="ws-empty-state card-base">
           <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" strokeWidth="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
           <h3>Awaiting Document Submission</h3>
@@ -78,7 +86,7 @@ const AnalysisWorkspace = ({ client, activeSubTab }) => {
       )}
 
       {/* Main workspace: issues or report */}
-      {docsComplete > 0 && (
+      {hasWorkspaceContent && (
         <div className="ws-main ws-main-full">
           {/* Issues panel */}
           {activeSubTab === 'issues' && (
