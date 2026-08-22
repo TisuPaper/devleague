@@ -1,0 +1,114 @@
+.agent-identity-card {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.identity-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+}
+
+.identity-info h2 {
+  font-size: 1.2rem;
+  margin-bottom: 0.25rem;
+}
+
+.agent-id {
+  font-family: monospace;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.identity-badges {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.success-icon {
+  color: var(--accent-success);
+}
+
+.balances {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.balance-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.currency-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  font-size: 0.75rem;
+  font-weight: bold;
+}
+
+.currency-icon.usdc {
+  background: #2775ca;
+  color: white;
+}
+
+.currency-icon.hbar {
+  background: #000;
+  color: white;
+}
+
+.balance-amount {
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.currency-name {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.agent-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: auto;
+}
+
+.detail-row {
+  display: flex;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.detail-label {
+  color: var(--text-muted);
+}
+
+.text-accent {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.view-details-link {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  text-decoration: none;
+  margin-top: 1.5rem;
+  align-self: flex-end;
+  transition: color 0.2s;
+}
+
+.view-details-link:hover {
+  color: var(--text-primary);
+}

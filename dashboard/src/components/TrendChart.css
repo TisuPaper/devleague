@@ -1,0 +1,76 @@
+.trend-chart {
+  display: flex;
+  flex-direction: column;
+}
+
+.chart-header {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--border-light);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.chart-header h3 {
+  font-size: 1rem;
+  margin: 0;
+}
+
+.legend {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.dot.rev { background-color: var(--accent-primary); }
+.dot.exp { background-color: var(--accent-danger); }
+
+.chart-container {
+  flex: 1;
+  padding: 1.5rem;
+  min-height: 250px;
+}
+
+/* Recharts Tooltip Customization */
+.custom-tooltip {
+  background: var(--bg-secondary) !important;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  padding: 1rem;
+  box-shadow: var(--shadow-lg);
+}
+
+.custom-tooltip .label {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: var(--text-primary);
+}
+
+.custom-tooltip .intro {
+  margin: 0.25rem 0;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.tooltip-item.total {
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px dashed var(--border-light);
+  font-weight: 600;
+}
+
+.anomaly-note {
+  margin-top: 0.5rem;
+  font-size: 0.75rem;
+  color: var(--accent-warning);
+  font-weight: 600;
+  border-top: 1px dashed var(--border-light);
+  padding-top: 0.5rem;
+}

@@ -1,0 +1,63 @@
+.activity-log-card {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.log-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.log-topic {
+  text-transform: none;
+  font-weight: 400;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  margin-left: 0.5rem;
+}
+
+.log-count {
+  background: rgba(16, 185, 129, 0.2);
+  color: var(--text-primary);
+  border: none;
+  font-size: 0.7rem;
+}
+
+.log-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.log-item {
+  display: grid;
+  grid-template-columns: 40px 70px 1fr 60px;
+  gap: 1rem;
+  font-size: 0.85rem;
+  align-items: center;
+}
+
+.log-id {
+  color: var(--text-muted);
+}
+
+.log-user {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.log-action {
+  color: var(--text-secondary);
+}
+
+.log-time {
+  color: var(--text-muted);
+  text-align: right;
+  font-size: 0.75rem;
+}

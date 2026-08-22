@@ -1,0 +1,127 @@
+.clients-tab {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.tab-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.clients-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: var(--spacing-xl);
+}
+
+.segmented-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--hairline);
+}
+
+.segmented-tabs .tab {
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--steel);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+}
+
+.segmented-tabs .tab.active {
+  color: var(--ink);
+  border-bottom-color: var(--ink);
+}
+
+.clients-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.clients-table th {
+  text-align: left;
+  padding: 12px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--slate);
+  border-bottom: 1px solid var(--hairline);
+}
+
+.clients-table td {
+  padding: 16px;
+  font-size: 14px;
+  color: var(--ink);
+  border-bottom: 1px solid var(--hairline-soft);
+}
+
+.clients-table tr:last-child td {
+  border-bottom: none;
+}
+
+.clients-table tr:hover td {
+  background-color: var(--surface-soft);
+}
+
+.domain-cell {
+  color: var(--link-blue);
+  font-weight: 500;
+}
+
+.name-cell {
+  font-weight: 500;
+}
+
+.status-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 8px;
+}
+
+.status-dot.active { background-color: var(--semantic-success); }
+.status-dot.processing { background-color: var(--semantic-warning); }
+
+.timeline {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.timeline-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-sm);
+}
+
+.timeline-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--rounded-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background-color: var(--canvas);
+  border: 1px solid var(--hairline);
+}
+
+.text-success { color: var(--semantic-success); }
+.text-warning { color: var(--semantic-warning); }
+
+.timeline-content {
+  flex: 1;
+}
+
+.timeline-content p {
+  margin-bottom: 4px;
+}
+
+.timeline-time {
+  font-size: 12px;
+  color: var(--slate);
+  white-space: nowrap;
+}
