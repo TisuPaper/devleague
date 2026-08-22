@@ -192,6 +192,11 @@
 }
 
 .table-footer {
-  border-top: 1px solid var(--hairline-soft);
-  background: var(--surface-soft);
+  border-top: 1px solid var(--hairline-strong);
+  background: transparent;
+  padding: 16px 24px;
+  font-size: 13px;
+  color: var(--ink-muted);
+  text-align: center;
+  font-weight: 500;
 }
