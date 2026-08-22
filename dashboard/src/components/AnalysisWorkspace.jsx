@@ -4,7 +4,7 @@ import ReportPreview from './ReportPreview';
 import EmailPreviewModal from './EmailPreviewModal';
 import './AnalysisWorkspace.css';
 
-const AnalysisWorkspace = ({ client }) => {
+const AnalysisWorkspace = ({ client, activeSubTab }) => {
   const [issues, setIssues] = useState(client.issues);
   const [modalIssue, setModalIssue] = useState(null);
   const [reportSent, setReportSent] = useState(client.report.status === 'sent');
@@ -77,41 +77,50 @@ const AnalysisWorkspace = ({ client }) => {
         </div>
       )}
 
-      {/* Main workspace: issues + report */}
+      {/* Main workspace: issues or report */}
       {docsComplete > 0 && (
-        <div className={`ws-main ${issues.length > 0 ? 'ws-main-split' : 'ws-main-full'}`}>
+        <div className="ws-main ws-main-full">
           {/* Issues panel */}
-          {issues.length > 0 && (
+          {activeSubTab === 'issues' && (
             <div className="ws-issues-panel">
               <div className="ws-panel-header">
                 <h3 className="ws-panel-title">Issues & Follow-up</h3>
                 <span className="ws-panel-sub">{openIssues} follow-up{openIssues !== 1 ? 's' : ''} pending</span>
               </div>
-              <div className="ws-issues-list">
-                {issues.map(issue => (
-                  <IssueCard
-                    key={issue.id}
-                    issue={issue}
-                    onPreviewEmail={() => setModalIssue(issue)}
-                    onEmailSent={() => handleEmailSent(issue.id)}
-                  />
-                ))}
-              </div>
+              
+              {issues.length > 0 ? (
+                <div className="ws-issues-list">
+                  {issues.map(issue => (
+                    <IssueCard
+                      key={issue.id}
+                      issue={issue}
+                      onPreviewEmail={() => setModalIssue(issue)}
+                      onEmailSent={() => handleEmailSent(issue.id)}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="ws-empty-state">
+                  <p>No issues found. All documents are processed cleanly.</p>
+                </div>
+              )}
             </div>
           )}
 
           {/* Report panel */}
-          <div className="ws-report-panel">
-            <div className="ws-panel-header">
-              <h3 className="ws-panel-title">AI-Generated Report</h3>
-              <span className="ws-panel-sub">{client.report.title}</span>
+          {activeSubTab === 'report' && (
+            <div className="ws-report-panel">
+              <div className="ws-panel-header">
+                <h3 className="ws-panel-title">AI-Generated Report</h3>
+                <span className="ws-panel-sub">{client.report.title}</span>
+              </div>
+              <ReportPreview
+                report={client.report}
+                reportSent={reportSent}
+                onApprove={handleApproveReport}
+              />
             </div>
-            <ReportPreview
-              report={client.report}
-              reportSent={reportSent}
-              onApprove={handleApproveReport}
-            />
-          </div>
+          )}
         </div>
       )}
 

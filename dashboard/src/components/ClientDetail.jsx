@@ -13,7 +13,8 @@ const STATUS_CONFIG = {
 
 const SUB_TABS = [
   { id: 'overview',  label: 'Overview' },
-  { id: 'analysis',  label: 'Analysis Workspace' },
+  { id: 'report',    label: 'AI Report' },
+  { id: 'issues',    label: 'Action Items' },
 ];
 
 const ClientDetail = ({ client, activeSubTab, setActiveSubTab, onSelectDifferent }) => {
@@ -122,7 +123,7 @@ const ClientDetail = ({ client, activeSubTab, setActiveSubTab, onSelectDifferent
             onClick={() => setActiveSubTab(tab.id)}
           >
             {tab.label}
-            {tab.id === 'analysis' && issueCount > 0 && (
+            {tab.id === 'issues' && issueCount > 0 && (
               <span className="sub-tab-badge">{issueCount}</span>
             )}
           </button>
@@ -133,7 +134,7 @@ const ClientDetail = ({ client, activeSubTab, setActiveSubTab, onSelectDifferent
       <div role="tabpanel">
         {activeSubTab === 'overview'
           ? <ClientOverview client={client} />
-          : <AnalysisWorkspace client={client} />
+          : <AnalysisWorkspace client={client} activeSubTab={activeSubTab} />
         }
       </div>
     </div>
