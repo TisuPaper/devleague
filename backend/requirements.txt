@@ -10,3 +10,4 @@ pypdf
 openpyxl
 xlrd
 google-genai
+google-cloud-pubsub

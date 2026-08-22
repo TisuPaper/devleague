@@ -1,0 +1,215 @@
+.reminders {
+  background: var(--canvas);
+  border: 1px solid var(--hairline);
+  border-radius: var(--rounded-lg);
+  padding: var(--spacing-lg);
+  box-shadow: var(--shadow-soft);
+}
+
+.reminders-head {
+  margin-bottom: var(--spacing-md);
+}
+
+.reminders-head h2 {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+  margin: 0 0 3px;
+}
+
+.reminders-sub {
+  font-size: 12px;
+  color: var(--ink-muted);
+  margin: 0;
+}
+
+.reminders-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--spacing-xs);
+}
+
+.reminder {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: start;
+  gap: var(--spacing-sm);
+  padding: 14px var(--spacing-sm);
+  border-radius: var(--rounded-md);
+  transition: background 0.15s ease, opacity 0.2s ease;
+}
+
+.reminder:hover {
+  background: var(--canvas-soft);
+}
+
+.reminder.done {
+  opacity: 0.42;
+}
+
+.reminder.done .reminder-title {
+  text-decoration: line-through;
+}
+
+/* A 3px rule carries the severity at the row edge — a second, non-colour cue
+   sits in the icon and the "Act now" label on the right. */
+.reminder.urgent {
+  box-shadow: inset 3px 0 0 var(--status-urgent);
+}
+
+.reminder.soon {
+  box-shadow: inset 3px 0 0 var(--status-soon);
+}
+
+.reminder.info {
+  box-shadow: inset 3px 0 0 var(--status-info);
+}
+
+.reminder-check {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  border-radius: var(--rounded-full);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.reminder.urgent .reminder-check {
+  color: var(--status-urgent);
+  background: var(--status-urgent-tint);
+}
+
+.reminder.soon .reminder-check {
+  color: var(--status-soon);
+  background: var(--status-soon-tint);
+}
+
+.reminder.info .reminder-check {
+  color: var(--status-info);
+  background: var(--status-info-tint);
+}
+
+.reminder-check:hover {
+  border-color: currentColor;
+}
+
+.reminder.done .reminder-check {
+  color: var(--ink-muted);
+  background: var(--hairline-soft);
+}
+
+.reminder-body {
+  min-width: 0;
+}
+
+.reminder-top {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.reminder-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  line-height: 1.4;
+}
+
+.reminder-live {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--status-info);
+  background: var(--status-info-tint);
+  border-radius: var(--rounded-full);
+  padding: 1px 6px;
+}
+
+.reminder-detail {
+  font-size: 12px;
+  color: var(--ink-muted);
+  line-height: 1.5;
+  margin: 3px 0 0;
+}
+
+.reminder-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  flex-shrink: 0;
+  text-align: right;
+}
+
+.reminder-sev {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.reminder.urgent .reminder-sev {
+  color: var(--status-urgent);
+}
+
+.reminder.soon .reminder-sev {
+  color: var(--status-soon);
+}
+
+.reminder.info .reminder-sev {
+  color: var(--status-info);
+}
+
+.reminder-due {
+  font-size: 11px;
+  color: var(--ink-faint);
+  white-space: nowrap;
+}
+
+.reminders-more {
+  width: 100%;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ink-muted);
+  background: transparent;
+  border: 1px solid var(--hairline);
+  border-radius: var(--rounded-md);
+  padding: 8px;
+  margin-top: var(--spacing-sm);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.reminders-more:hover {
+  background: var(--canvas-soft);
+  color: var(--ink);
+}
+
+@media (max-width: 640px) {
+  .reminder {
+    grid-template-columns: auto 1fr;
+  }
+
+  .reminder-meta {
+    grid-column: 2;
+    flex-direction: row;
+    align-items: center;
+    gap: var(--spacing-xs);
+    justify-content: flex-start;
+    margin-top: 4px;
+  }
+}

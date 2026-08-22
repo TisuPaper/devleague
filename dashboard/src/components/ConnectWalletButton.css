@@ -1,0 +1,125 @@
+.wallet-connect {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.wallet-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ink);
+  background: var(--canvas);
+  border: 1px solid var(--hairline-strong);
+  border-radius: var(--rounded-md);
+  padding: 6px 12px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.wallet-btn:hover:not(:disabled) {
+  background: var(--canvas-soft);
+  border-color: var(--ink-faint);
+}
+
+.wallet-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.wallet-btn:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+.wallet-btn.connected {
+  background: var(--canvas-soft);
+}
+
+.wallet-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: var(--rounded-full);
+  background: var(--accent-green);
+  flex-shrink: 0;
+}
+
+.wallet-address {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.01em;
+}
+
+.wallet-error {
+  font-size: 12px;
+  color: var(--accent-orange);
+  max-width: 200px;
+}
+
+.wallet-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  min-width: 240px;
+  background: var(--canvas);
+  border: 1px solid var(--hairline);
+  border-radius: var(--rounded-lg);
+  box-shadow: var(--shadow-elevated);
+  padding: var(--spacing-xxs);
+  z-index: 20;
+}
+
+.wallet-menu-header {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 10px 10px;
+  border-bottom: 1px solid var(--hairline-soft);
+  margin-bottom: var(--spacing-xxs);
+}
+
+.wallet-menu-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink-faint);
+}
+
+.wallet-menu-address {
+  font-size: 12px;
+  color: var(--ink-secondary);
+  word-break: break-all;
+  line-height: 1.45;
+}
+
+.wallet-menu-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  width: 100%;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink-secondary);
+  background: transparent;
+  border: none;
+  border-radius: var(--rounded-md);
+  padding: 7px 10px;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.wallet-menu-item:hover {
+  background: var(--canvas-soft);
+  color: var(--ink);
+}
+
+.wallet-menu-item.danger:hover {
+  color: var(--accent-orange);
+}

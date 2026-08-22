@@ -1,64 +1,54 @@
-import React, { useMemo, useState } from 'react';
+import React, { lazy, Suspense, useMemo, useState } from 'react';
 import TopNav from './components/TopNav';
-import DashboardPage from './components/DashboardPage';
-import ClientDetail from './components/ClientDetail';
+import OverviewPage from './components/OverviewPage';
 import { useProcessedClients } from './hooks/useProcessedClients';
-import { mergeLiveClients } from './data/liveClient';
-import { mockClients } from './data/mockData';
+import { LIVE_CLIENT_DOMAIN } from './data/liveClient';
 import './index.css';
 
+// Split out: this page pulls in @solana/web3.js, which is most of the bundle.
+// Nobody pays for it until they open the Payments tab.
+const PaymentsPage = lazy(() => import('./components/PaymentsPage'));
+
+const TAB_IDS = ['overview', 'payments'];
+
 function App() {
-  const [activeTab, setActiveTab] = useState('clients');
-  const [selectedDomain, setSelectedDomain] = useState(null);
-  const [clientSubTab, setClientSubTab] = useState('overview');
+  // Tab lives in the URL hash so a view can be linked or bookmarked, and a
+  // reload keeps you where you were.
+  const [activeTab, setActiveTab] = useState(() => {
+    const fromHash = window.location.hash.replace('#', '');
+    return TAB_IDS.includes(fromHash) ? fromHash : 'overview';
+  });
 
-  // Real clients the backend has processed email for, polled continuously.
-  const { clients: liveClients, status: liveStatus, error: liveError } =
-    useProcessedClients();
-
-  const clients = useMemo(
-    () => mergeLiveClients(mockClients, liveClients),
-    [liveClients]
-  );
-
-  // Resolve the selection from the current list rather than holding a snapshot,
-  // so an open workspace refreshes itself as new analysis arrives.
-  const selectedClient = selectedDomain
-    ? clients.find(c => c.domain === selectedDomain) ?? null
-    : null;
-
-  const handleSelectClient = (client) => {
-    setSelectedDomain(client.domain);
-    setClientSubTab('overview');
-    setActiveTab('workspace');
-  };
-
-  const handleTabChange = (tab) => {
+  const selectTab = (tab) => {
     setActiveTab(tab);
+    window.history.replaceState(null, '', `#${tab}`);
   };
+
+  // Same backend feed as before (Gmail push -> analyse -> /api/clients); the
+  // dashboard now reads it as the account owner's own statements rather than
+  // as a roster of clients.
+  const { clients: liveClients, status: liveStatus } = useProcessedClients();
+
+  // Whatever the backend has actually processed. Prefer the configured live
+  // domain, else the most recently active record, else nothing.
+  const liveClient = useMemo(() => {
+    if (!liveClients?.length) return null;
+    return (
+      liveClients.find((c) => c.domain === LIVE_CLIENT_DOMAIN) ?? liveClients[0]
+    );
+  }, [liveClients]);
 
   return (
     <div className="app-shell">
-      <TopNav
-        activeTab={activeTab}
-        setActiveTab={handleTabChange}
-        selectedClient={selectedClient}
-      />
+      <TopNav activeTab={activeTab} setActiveTab={selectTab} />
       <div className="page-area">
-        {activeTab === 'clients' ? (
-          <DashboardPage
-            clients={clients}
-            liveStatus={liveStatus}
-            liveError={liveError}
-            onSelectClient={handleSelectClient}
-          />
-        ) : (
-          <ClientDetail
-            client={selectedClient}
-            activeSubTab={clientSubTab}
-            setActiveSubTab={setClientSubTab}
-            onSelectDifferent={() => setActiveTab('clients')}
-          />
+        {activeTab === 'overview' && (
+          <OverviewPage liveClient={liveClient} liveStatus={liveStatus} />
+        )}
+        {activeTab === 'payments' && (
+          <Suspense fallback={<div className="page-loading">Loading…</div>}>
+            <PaymentsPage />
+          </Suspense>
         )}
       </div>
     </div>

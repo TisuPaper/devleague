@@ -20,6 +20,14 @@ class Settings(BaseSettings):
     # If set, incoming requests must include a matching ?token= query param.
     # Leave blank only for local hackathon testing; see README "Security Notes".
     PUBSUB_VERIFICATION_TOKEN: str = ""
+
+    # Pull-mode subscription ID (e.g. "finance-mail-sub"). When set, the app
+    # opens an outbound streaming-pull connection to Pub/Sub instead of waiting
+    # for inbound push requests -- no public HTTPS endpoint, domain, or TLS
+    # certificate needed. Requires Google credentials with
+    # roles/pubsub.subscriber (see GOOGLE_APPLICATION_CREDENTIALS).
+    # Leave blank to stay in push/webhook mode.
+    PUBSUB_SUBSCRIPTION_ID: str = ""
     
     # Gmail settings
     GMAIL_USER_ID: str = "me"

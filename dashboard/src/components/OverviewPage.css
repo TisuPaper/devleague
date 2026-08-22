@@ -1,0 +1,134 @@
+.overview {
+  padding: var(--spacing-lg) var(--spacing-xl);
+  max-width: 1180px;
+  margin: 0 auto;
+  width: 100%;
+  display: grid;
+  gap: var(--spacing-lg);
+}
+
+.overview-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+}
+
+.overview-head h1 {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--ink);
+  letter-spacing: -0.02em;
+  margin: 0 0 4px;
+}
+
+.overview-sub {
+  font-size: 13px;
+  color: var(--ink-muted);
+  margin: 0;
+}
+
+.overview-conn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 500;
+  border-radius: var(--rounded-full);
+  padding: 4px 10px;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.overview-conn.up {
+  color: var(--accent-green);
+  background: #eef8f0;
+}
+
+.overview-conn.down {
+  color: var(--status-urgent);
+  background: var(--status-urgent-tint);
+}
+
+.overview-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: var(--spacing-sm);
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  background: var(--canvas);
+  border: 1px solid var(--hairline);
+  border-radius: var(--rounded-lg);
+  padding: var(--spacing-md);
+  box-shadow: var(--shadow-soft);
+}
+
+.stat.emphasis {
+  background: var(--canvas-soft);
+  border-color: var(--hairline-strong);
+}
+
+.stat-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ink-faint);
+}
+
+.stat-value {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--ink);
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.15;
+}
+
+/* Direction is in the arrow glyph too, so the sense survives without colour. */
+.stat-delta {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 11px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.stat-delta.good {
+  color: var(--accent-green);
+}
+
+.stat-delta.bad {
+  color: var(--status-urgent);
+}
+
+.stat-delta.flat {
+  color: var(--ink-faint);
+}
+
+.overview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+  gap: var(--spacing-lg);
+  align-items: start;
+}
+
+@media (max-width: 720px) {
+  .overview {
+    padding: var(--spacing-md);
+  }
+
+  .overview-head {
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+
+  .overview-grid {
+    grid-template-columns: 1fr;
+  }
+}

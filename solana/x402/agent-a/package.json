@@ -1,0 +1,17 @@
+{
+  "name": "agent-a",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "x402 paying agent (buyer). Signs 0.1 devnet USDC payments from a local keypair.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node --env-file-if-exists=.env server.js"
+  },
+  "dependencies": {
+    "express": "^5.1.0",
+    "x402-solana": "^3.0.0",
+    "@solana/web3.js": "^1.98.4",
+    "@solana/spl-token": "^0.4.14"
+  }
+}

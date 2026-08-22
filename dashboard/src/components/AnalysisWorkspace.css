@@ -22,6 +22,8 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
+}
+
 .ws-stat-warn { color: var(--accent-orange); }
 .ws-stat-ok   { color: var(--accent-green); }
 .ws-stat-action { color: var(--primary); }

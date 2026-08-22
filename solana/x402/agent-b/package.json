@@ -1,0 +1,17 @@
+{
+  "name": "agent-b",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "x402 resource server (seller). Sells a premium risk report for 0.1 devnet USDC.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node --env-file-if-exists=.env server.js"
+  },
+  "dependencies": {
+    "express": "^5.1.0",
+    "x402-solana": "^3.0.0",
+    "@solana/web3.js": "^1.98.4",
+    "@solana/spl-token": "^0.4.14"
+  }
+}

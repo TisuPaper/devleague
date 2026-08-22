@@ -1,0 +1,244 @@
+.x402-panel {
+  background: var(--canvas);
+  border: 1px solid var(--hairline);
+  border-radius: var(--rounded-lg);
+  padding: var(--spacing-lg);
+  box-shadow: var(--shadow-soft);
+}
+
+.x402-head {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  margin-bottom: var(--spacing-md);
+}
+
+.x402-head h2 {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--ink);
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.x402-sub {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink-faint);
+  background: var(--canvas-soft);
+  border-radius: var(--rounded-full);
+  padding: 2px 8px;
+}
+
+.x402-flow {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  background: var(--canvas-soft);
+  border-radius: var(--rounded-md);
+  padding: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
+}
+
+.x402-agent {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  flex: 1;
+  min-width: 0;
+  color: var(--ink-muted);
+}
+
+.x402-agent > div {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.x402-agent strong {
+  font-size: 13px;
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.x402-agent span {
+  font-size: 11px;
+  color: var(--ink-faint);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.x402-arrow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+.x402-amount {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--primary);
+  white-space: nowrap;
+}
+
+.x402-field {
+  display: block;
+  margin-bottom: var(--spacing-md);
+}
+
+.x402-field span {
+  display: block;
+  font-size: 12px;
+  color: var(--ink-muted);
+  margin-bottom: 5px;
+}
+
+.x402-field input {
+  width: 100%;
+  font-family: inherit;
+  font-size: 12px;
+  color: var(--ink);
+  background: var(--canvas);
+  border: 1px solid var(--hairline-strong);
+  border-radius: var(--rounded-md);
+  padding: 8px 10px;
+  transition: border-color 0.15s ease;
+}
+
+.x402-field input:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+.x402-btn {
+  width: 100%;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--canvas);
+  background: var(--primary);
+  border: 1px solid var(--primary);
+  border-radius: var(--rounded-md);
+  padding: 9px 12px;
+  cursor: pointer;
+  transition: background 0.15s ease, opacity 0.15s ease;
+}
+
+.x402-btn:hover:not(:disabled) {
+  background: var(--primary-active);
+}
+
+.x402-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.x402-result {
+  margin-top: var(--spacing-md);
+  padding-top: var(--spacing-md);
+  border-top: 1px solid var(--hairline-soft);
+}
+
+.x402-steps {
+  list-style: none;
+  margin: 0 0 var(--spacing-sm);
+  padding: 0;
+  display: grid;
+  gap: 7px;
+}
+
+.x402-steps li {
+  display: grid;
+  grid-template-columns: auto auto 1fr;
+  align-items: baseline;
+  gap: var(--spacing-xs);
+  font-size: 12px;
+}
+
+.x402-steps li svg {
+  position: relative;
+  top: 2px;
+}
+
+.x402-steps li.good {
+  color: var(--accent-green);
+}
+
+.x402-steps li.bad {
+  color: var(--accent-orange);
+}
+
+.x402-step-label {
+  font-weight: 600;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.x402-step-detail {
+  color: var(--ink-muted);
+  word-break: break-all;
+  font-size: 11px;
+}
+
+.x402-settled {
+  background: var(--canvas-soft);
+  border-radius: var(--rounded-md);
+  padding: var(--spacing-sm);
+  display: grid;
+  gap: 5px;
+}
+
+.x402-settled-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-sm);
+  font-size: 12px;
+}
+
+.x402-settled-row span {
+  color: var(--ink-faint);
+}
+
+.x402-settled-row code {
+  font-size: 11px;
+  color: var(--ink-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+.x402-settled-row a {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: var(--primary);
+  text-decoration: none;
+}
+
+.x402-settled-row a:hover {
+  text-decoration: underline;
+}
+
+.x402-report {
+  margin: var(--spacing-sm) 0 0;
+  padding: var(--spacing-sm);
+  background: var(--canvas-soft);
+  border-radius: var(--rounded-md);
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--ink-secondary);
+  overflow-x: auto;
+}
+
+.x402-error {
+  font-size: 12px;
+  color: var(--accent-orange);
+  margin: var(--spacing-sm) 0 0;
+  line-height: 1.5;
+  word-break: break-word;
+}

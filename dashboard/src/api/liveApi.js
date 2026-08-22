@@ -32,3 +32,36 @@ export async function fetchProcessedClients() {
     clearTimeout(timeout);
   }
 }
+
+// Settlement waits on the facilitator and on devnet confirmation, so it needs a
+// far longer budget than a normal read.
+const X402_TIMEOUT_MS = 60000;
+
+/**
+ * Ask Agent A to buy Agent B's premium report over x402.
+ *
+ * Resolves to the agent's own JSON on both outcomes — a refused or failed
+ * payment comes back with `ok: false` and the handshake `steps` intact, which
+ * is what the UI needs to show where it stopped. Only transport failures throw.
+ */
+export async function payViaX402(subject) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), X402_TIMEOUT_MS);
+
+  try {
+    const response = await fetch(`${API_BASE}/x402/pay`, {
+      method: 'POST',
+      signal: controller.signal,
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify({ subject }),
+    });
+
+    // 402 is a normal protocol outcome here, not a transport error.
+    const payload = await response.json().catch(() => null);
+    if (payload) return payload;
+
+    throw new Error(`Agent A returned ${response.status} with no JSON body`);
+  } finally {
+    clearTimeout(timeout);
+  }
+}

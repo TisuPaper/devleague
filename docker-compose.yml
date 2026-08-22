@@ -3,8 +3,22 @@
 #   web     - Caddy: TLS termination, static dashboard, /api reverse proxy
 #   backend - FastAPI: Gmail webhook + extraction/redaction/AI pipeline
 #
-# Start with:  docker compose up -d --build
-# See backend/README.md "Deploying to a single host" for the full runbook.
+# Prerequisites (see backend/README.md "Deploying to a single host"):
+#   1. SITE_ADDRESS:
+#        PULL mode (bare IP is fine):  SITE_ADDRESS=:80
+#        PUSH mode (needs hostname):   SITE_ADDRESS=your.host.name
+#      Pull mode is recommended on a bare-IP VM -- the backend connects out to
+#      Pub/Sub, so no public HTTPS endpoint or certificate is needed.
+#   2. ./backend/state/ must exist and contain credentials.json + token.json
+#      (and pubsub-sa.json in pull mode), owned by uid 10001 (the container's
+#      non-root user):
+#         mkdir -p backend/state
+#         cp backend/credentials.json backend/token.json backend/state/
+#         sudo chown -R 10001:10001 backend/state
+#   3. ./backend/.env must exist with GEMINI_API_KEY set, plus either
+#      PUBSUB_SUBSCRIPTION_ID (pull) or PUBSUB_VERIFICATION_TOKEN (push).
+#
+# Start with:  SITE_ADDRESS=:80 docker compose up -d --build
 
 services:
   web:
@@ -15,13 +29,14 @@ services:
       - "80:80"
       - "443:443"
     environment:
-      # Your public domain, e.g. SITE_ADDRESS=exia.example.com
-      # Pub/Sub push requires a publicly-valid cert, so this must be a real
-      # hostname pointed at this host -- not an IP.
-      SITE_ADDRESS: ${SITE_ADDRESS:?set SITE_ADDRESS to your public domain}
+      # Default serves HTTP on 80 plus HTTPS on 443 with an internally-signed
+      # cert, so browsers that auto-upgrade to HTTPS still get a response.
+      # Set to a hostname instead to get a real Let's Encrypt cert (needed for
+      # Pub/Sub push mode).
+      SITE_ADDRESS: ${SITE_ADDRESS:-http://:80, https://:443}
     volumes:
       # Persist issued certificates so restarts don't re-request from
-      # Let's Encrypt (which rate-limits).
+      # Let's Encrypt (which rate-limits per hostname).
       - caddy_data:/data
       - caddy_config:/config
     depends_on:
@@ -31,30 +46,37 @@ services:
     build:
       context: ./backend
     restart: unless-stopped
-    # No published ports: only reachable through the web container. Keeps the
-    # API off the public internet except via Caddy (which enforces TLS).
+    # No published ports: reachable only through the web container, so the API
+    # is never exposed except via Caddy (which enforces TLS).
     expose:
       - "8000"
     env_file:
       - ./backend/.env
     environment:
-      # Turns off /docs, /redoc, /openapi.json and debug stack traces.
+      # Disables /docs, /redoc, /openapi.json and debug stack traces.
       ENVIRONMENT: production
       DEBUG: "false"
+      # Keep all mutable auth/cursor state in one mounted directory so it
+      # survives container rebuilds. token.json is rewritten in place whenever
+      # the OAuth access token refreshes, so this must be writable.
+      CREDENTIALS_FILE: /app/state/credentials.json
+      TOKEN_FILE: /app/state/token.json
+      STATE_FILE: /app/state/gmail_state.json
+      # Service-account key used by the pull subscriber. Only needed when
+      # PUBSUB_SUBSCRIPTION_ID is set in .env (pull mode); harmless otherwise.
+      GOOGLE_APPLICATION_CREDENTIALS: /app/state/pubsub-sa.json
     volumes:
-      # OAuth token + Gmail history cursor. Provisioned by you before first
-      # start (see runbook) -- the interactive OAuth flow cannot run headless.
-      - ./backend/token.json:/app/token.json
-      - ./backend/credentials.json:/app/credentials.json:ro
-      - backend_state:/app/state
-      # Downloaded attachments and derived analysis. On a named volume so a
-      # container rebuild doesn't discard processed results.
+      # Provisioned by you before first start (step 2 above). The interactive
+      # OAuth flow cannot run headless, so token.json is generated on your
+      # laptop and copied here.
+      - ./backend/state:/app/state
+      # Attachments and derived analysis. Named volumes inherit the image's
+      # appuser ownership, so no chown needed for these.
       - backend_downloads:/app/downloads
       - backend_processed:/app/processed
 
 volumes:
   caddy_data:
   caddy_config:
-  backend_state:
   backend_downloads:
   backend_processed:

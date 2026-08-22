@@ -1,2 +1,22 @@
 node_modules
 .gemini
+
+# Google service-account keys (long-lived credentials — never commit)
+pubsub-sa.json
+*-sa.json
+*service-account*.json
+client_secret_*.json
+
+# Local env files
+.env
+.env.local
+
+# Solana keypairs (raw ed25519 secret keys — never commit)
+solana/.keys/
+**/*-keypair.json
+id.json
+
+# Solana build output
+solana/**/target/
+solana/**/.anchor/
+solana/**/test-ledger/

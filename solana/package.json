@@ -1,0 +1,20 @@
+{
+  "name": "devleague-solana",
+  "private": true,
+  "type": "module",
+  "description": "Devnet escrow program + x402 agent-to-agent payments",
+  "workspaces": [
+    "x402/agent-a",
+    "x402/agent-b"
+  ],
+  "dependencies": {
+    "@solana/web3.js": "^1.98.4"
+  },
+  "scripts": {
+    "agent-a": "node --env-file-if-exists=x402/agent-a/.env x402/agent-a/server.js",
+    "agent-b": "node --env-file-if-exists=x402/agent-b/.env x402/agent-b/server.js",
+    "escrow:test": "cd escrow && cargo test",
+    "escrow:build": "cd escrow && anchor build",
+    "escrow:smoke": "node escrow/scripts/smoke-devnet.mjs"
+  }
+}

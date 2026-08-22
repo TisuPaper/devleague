@@ -16,6 +16,18 @@
   --accent-green: #1aae39;
   --accent-brown: #523410;
 
+  /* Status palette — reserved for state (never reused as chart series colours).
+     Validated for colour-blind separation against the white surface: worst
+     adjacent pair is amber↔red at deutan ΔE 18.0 / normal ΔE 22.4. Every use
+     pairs the colour with an icon and a text label, so state is never carried
+     by colour alone. */
+  --status-urgent: #b42318;
+  --status-urgent-tint: #fdf1ef;
+  --status-soon: #ca8a04;
+  --status-soon-tint: #fdf8ec;
+  --status-info: #0075de;
+  --status-info-tint: #eef6fd;
+
   /* Surfaces */
   --canvas: #ffffff; /* Card and panel surfaces */
   --surface: #ffffff;

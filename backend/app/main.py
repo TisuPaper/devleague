@@ -1,4 +1,5 @@
 """Main FastAPI application"""
+import asyncio
 import logging
 from contextlib import asynccontextmanager
 
@@ -7,6 +8,11 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import get_settings, ensure_directories
 from app.api import gmail, clients
+from app.services.pubsub_subscriber import (
+    is_pull_mode,
+    start_pull_subscriber,
+    stop_pull_subscriber,
+)
 
 # Configure logging
 logging.basicConfig(
@@ -23,7 +29,21 @@ async def lifespan(app: FastAPI):
     logger.info("Starting Financial Email Receiver API")
     ensure_directories()
     settings = get_settings()
-    if not settings.PUBSUB_VERIFICATION_TOKEN:
+
+    pull_started = False
+    if is_pull_mode():
+        # Outbound streaming pull: no inbound webhook is used, so the
+        # verification-token warning below doesn't apply.
+        pull_started = start_pull_subscriber(
+            asyncio.get_running_loop(), gmail.process_new_emails
+        )
+        if not pull_started:
+            logger.error(
+                "PUBSUB_SUBSCRIPTION_ID is set but the pull subscriber failed to "
+                "start - no Gmail notifications will be processed. Check Google "
+                "credentials and that the subscription exists."
+            )
+    elif not settings.PUBSUB_VERIFICATION_TOKEN:
         if settings.ENVIRONMENT.strip().lower() == "development":
             logger.warning(
                 "PUBSUB_VERIFICATION_TOKEN is not set - the /api/webhooks/gmail endpoint "
@@ -41,8 +61,10 @@ async def lifespan(app: FastAPI):
             )
 
     yield
-    
+
     # Shutdown
+    if pull_started:
+        stop_pull_subscriber()
     logger.info("Shutting down Financial Email Receiver API")
 
 

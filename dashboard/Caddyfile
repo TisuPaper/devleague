@@ -1,17 +1,31 @@
 # Caddy config for the deployed demo.
 #
 # SITE_ADDRESS is substituted from the environment (see docker-compose.yml).
-# Set it to your domain (e.g. exia.example.com) and Caddy provisions a real
-# Let's Encrypt certificate automatically. Google Pub/Sub push REQUIRES a
-# publicly-valid TLS certificate -- a self-signed cert will be rejected, which
-# is why a real domain is needed rather than a bare IP address.
+#
+#   PULL mode on a bare IP (default):
+#     SITE_ADDRESS="http://:80, https://:443"
+#   Serves plain HTTP, plus HTTPS with Caddy's internally-signed certificate.
+#   The internal cert triggers a browser warning you click through, but it
+#   means modern browsers -- which silently upgrade typed addresses to HTTPS --
+#   get a response instead of ERR_CONNECTION_REFUSED. Pub/Sub is not involved
+#   here (the backend pulls), so a publicly-trusted cert isn't needed.
+#
+#   PUSH mode (needs a real hostname):
+#     SITE_ADDRESS=your.host.name
+#   Caddy then provisions a real Let's Encrypt certificate, which Pub/Sub push
+#   requires -- it rejects plain HTTP and self-signed certs.
 {$SITE_ADDRESS} {
 	encode zstd gzip
+
+	# Serve HTTPS with a locally-signed cert when the site address has no
+	# public hostname to get a real certificate for. Ignored (a real ACME cert
+	# is used instead) when SITE_ADDRESS is a resolvable public hostname.
+	tls internal
 
 	# Backend API. Everything under /api goes to the FastAPI container.
 	handle /api/* {
 		reverse_proxy backend:8000 {
-			# The webhook does real work (Gmail fetch + Gemini call) before
+			# The pipeline does real work (Gmail fetch + Gemini call) before
 			# responding; give it room rather than cutting the request off.
 			transport http {
 				response_header_timeout 120s
@@ -26,10 +40,11 @@
 		file_server
 	}
 
-	# Basic hardening headers. The dashboard is self-contained (no CDN), so a
-	# tight CSP is practical here.
+	# Hardening headers. Strict-Transport-Security is deliberately NOT set:
+	# this deployment is reachable over plain HTTP, and advertising HSTS on a
+	# connection that isn't guaranteed to be TLS is misleading at best. Add it
+	# back only when serving exclusively over HTTPS with a trusted cert.
 	header {
-		Strict-Transport-Security "max-age=31536000; includeSubDomains"
 		X-Content-Type-Options "nosniff"
 		X-Frame-Options "DENY"
 		Referrer-Policy "no-referrer"

@@ -46,9 +46,12 @@
   justify-content: center;
 }
 
-/* This empty div will push the tabs to the center if we use flex-1 on brand and this */
-.top-nav::after {
-  content: '';
+/* Balances .top-nav-brand so the tabs stay centred in the bar. */
+.top-nav-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--spacing-xs);
   flex: 1;
 }
 
