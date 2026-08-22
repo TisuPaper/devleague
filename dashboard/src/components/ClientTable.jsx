@@ -28,7 +28,7 @@ const DocProgress = ({ documents }) => {
       <div className="doc-bar">
         <div
           className={`doc-bar-fill ${complete === total ? 'full' : ''}`}
-          style={{ width: `${(complete / total) * 100}%` }}
+          style={{ transform: `scaleX(${total === 0 ? 0 : complete / total})` }}
         />
       </div>
     </div>

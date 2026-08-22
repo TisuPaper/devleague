@@ -52,7 +52,7 @@ const AnalysisWorkspace = ({ client }) => {
           <div className="ws-progress-bar">
             <div
               className={`ws-progress-fill ${docsComplete === docsTotal ? 'full' : ''}`}
-              style={{ width: `${(docsComplete / docsTotal) * 100}%` }}
+              style={{ transform: `scaleX(${docsComplete / docsTotal})` }}
             />
           </div>
         </div>

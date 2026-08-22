@@ -22,11 +22,9 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
-}
-
-.ws-stat-warn { border-left: 3px solid var(--accent-orange); }
-.ws-stat-ok   { border-left: 3px solid var(--accent-green); }
-.ws-stat-action { border-left: 3px solid var(--primary); }
+.ws-stat-warn { color: var(--accent-orange); }
+.ws-stat-ok   { color: var(--accent-green); }
+.ws-stat-action { color: var(--primary); }
 
 .ws-stat-value {
   font-size: 20px;
@@ -51,7 +49,8 @@
   height: 100%;
   background: var(--primary);
   border-radius: var(--rounded-full);
-  transition: width 0.3s ease;
+  transform-origin: left;
+  transition: transform 0.3s ease;
 }
 
 .ws-progress-fill.full { background: var(--accent-green); }

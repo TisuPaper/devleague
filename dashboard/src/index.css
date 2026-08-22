@@ -1,5 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-
+/* Fonts removed to use system UI stack */
 :root {
   /* Brand & Accent */
   --primary: #0075de; /* Notion Blue - the only structural accent */
@@ -39,17 +38,15 @@
   --spacing-sm: 12px;
   --spacing-md: 16px;
   --spacing-lg: 24px;
-  --spacing-xl: 28px;
-  --spacing-xxl: 32px;
-
-  /* Border Radius */
-  --rounded-xs: 4px; /* Form fields, small tags */
-  --rounded-sm: 5px; /* Menu items, list rows */
-  --rounded-md: 8px; /* Utility / nav buttons, smaller cards */
-  --rounded-lg: 12px; /* Feature cards */
-  --rounded-xl: 16px;
-  --rounded-full: 9999px; /* Marketing pill CTAs, badges */
-
+  --spacing-xl: 32px;
+  --spacing-xxl: 48px;
+  
+  /* Radii */
+  --rounded-sm: 4px;
+  --rounded-md: 6px;
+  --rounded-lg: 8px;
+  --rounded-full: 999px;
+  
   /* Shadows */
   --shadow-soft: rgba(0,0,0,0.01) 0 0.175px 1.041px, 
                  rgba(0,0,0,0.02) 0 0.8px 2.925px, 
@@ -61,6 +58,7 @@
                      rgba(0,0,0,0.05) 0 23px 52px;
 }
 
+/* Global Reset */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -68,16 +66,21 @@
 }
 
 body {
-  font-family: 'Inter', -apple-system, system-ui, "Segoe UI", Helvetica, Arial, sans-serif;
-  background-color: var(--canvas-soft);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   color: var(--ink);
+  background-color: var(--canvas-soft);
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Typography Classes */
-.display-1 { font-size: 64px; font-weight: 700; line-height: 1.0; letter-spacing: -2.125px; color: var(--ink); }
+/* Typography Scale */
+.display-1 {
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+}
 .display-2 { font-size: 54px; font-weight: 700; line-height: 1.04; letter-spacing: -1.875px; color: var(--ink); }
 .heading-1 { font-size: 40px; font-weight: 700; line-height: 1.1; letter-spacing: -1px; color: var(--ink); }
 .heading-2 { font-size: 26px; font-weight: 700; line-height: 1.23; letter-spacing: -0.625px; color: var(--ink); }
