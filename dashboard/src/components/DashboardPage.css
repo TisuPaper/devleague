@@ -1,0 +1,30 @@
+.dashboard-page {
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.dashboard-layout {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 24px;
+  align-items: start;
+}
+
+.dashboard-main {
+  min-width: 0;
+}
+
+.dashboard-sidebar {
+  position: sticky;
+  top: 24px;
+}
+
+@media (max-width: 900px) {
+  .dashboard-layout {
+    grid-template-columns: 1fr;
+  }
+  .dashboard-sidebar {
+    position: static;
+  }
+}

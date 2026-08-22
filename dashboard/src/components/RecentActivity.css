@@ -1,0 +1,69 @@
+.activity-card {
+  padding: 0;
+  overflow: hidden;
+}
+
+.activity-card-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--hairline);
+}
+
+.activity-card-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink-deep);
+}
+
+.activity-list {
+  list-style: none;
+  padding: 0;
+}
+
+.activity-item {
+  display: flex;
+  gap: 12px;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--hairline-soft);
+  align-items: flex-start;
+}
+
+.activity-item:last-child {
+  border-bottom: none;
+}
+
+.activity-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-top: 5px;
+  flex-shrink: 0;
+}
+
+.dot-success { background: #2e7d32; }
+.dot-issue   { background: #e65100; }
+.dot-info    { background: var(--stone); }
+
+.activity-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.activity-domain {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--primary);
+  font-family: monospace;
+}
+
+.activity-action {
+  font-size: 13px;
+  color: var(--charcoal);
+  line-height: 1.4;
+}
+
+.activity-timestamp {
+  font-size: 11px;
+  color: var(--muted);
+}
