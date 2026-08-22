@@ -6,9 +6,8 @@ A modern, Notion-style portal for financial corporate staff to process client do
 1. [Problem Statement](#1-problem-statement)
 2. [Solution & Features](#2-solution--features)
 3. [Architecture](#3-architecture)
-4. [Tech Stack](#4-tech-stack)
-5. [System Overview](#5-system-overview)
-6. [Future Roadmap](#6-future-roadmap)
+4. [System Overview](#4-system-overview)
+5. [Future Roadmap](#5-future-roadmap)
 
 ## 1. Problem Statement
 Processing client financial documents (like General Ledgers, Payroll Summaries, and AR Aging reports) is a tedious and manual process. Corporate staff spend too much time chasing clients for missing or incorrectly formatted documents rather than performing actual financial analysis. There is a strong need for a system that can pre-process these files and surface actionable issues immediately.
@@ -31,14 +30,7 @@ The system consists of a robust backend for processing and a lightning-fast Reac
 - **Frontend (React/Vite):** A Single Page Application (SPA) that queries the backend. It features a dashboard to track onboarding and a dedicated Workspace View for reading AI reports and resolving issues.
 - **Deployment:** A single-host Docker Compose deployment featuring Caddy for TLS termination and reverse-proxying.
 
-## 4. Tech Stack
-| Layer | Technologies |
-| --- | --- |
-| **Frontend** | React, Vite, JavaScript, Vanilla CSS |
-| **Backend** | Python, FastAPI, Uvicorn, Google GenAI, PyPDF, OpenPyXL |
-| **Infrastructure** | Docker, Docker Compose, Caddy |
-
-## 5. System Overview
+## 4. System Overview
 **Key Components:**
 - `DashboardPage` & `ClientTable`: The main entry point displaying the unified client base.
 - `LiveStatusBar`: A thin connection indicator providing visual feedback that the dashboard is synced with the live email ingestion pipeline.
@@ -47,7 +39,7 @@ The system consists of a robust backend for processing and a lightning-fast Reac
 - `AnalysisWorkspace`: The core functional area that manages the state for Reports and Issues.
 - `ReportPreview`: Full-width document viewer for the AI-generated report.
 
-## 6. Future Roadmap
+## 5. Future Roadmap
 - **Live Document Viewer:** Add an inline PDF/Spreadsheet viewer for side-by-side comparison with the AI report.
 - **Custom Email Templates:** Allow staff to edit and save custom follow-up email templates per client industry.
 - **Multi-Tenant Support:** Expand the workspace to support different teams and roles within the financial corporation.
