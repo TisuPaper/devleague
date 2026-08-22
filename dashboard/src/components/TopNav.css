@@ -1,0 +1,64 @@
+.top-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 24px;
+  background: var(--canvas);
+  border-bottom: 1px solid var(--hairline);
+  flex-shrink: 0;
+}
+
+.top-nav-tabs {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--surface);
+  border-radius: var(--rounded-full);
+  padding: 4px;
+  border: 1px solid var(--hairline);
+}
+
+.top-nav-tab {
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--steel);
+  background: transparent;
+  border: none;
+  border-radius: var(--rounded-full);
+  padding: 8px 22px;
+  cursor: pointer;
+  transition: background 0.18s ease, color 0.18s ease;
+  white-space: nowrap;
+}
+
+.top-nav-tab:hover {
+  background: var(--canvas);
+  color: var(--ink);
+}
+
+.top-nav-tab.active {
+  background: var(--ink-deep);
+  color: #ffffff;
+}
+
+.top-nav-tab.active:hover {
+  background: var(--charcoal);
+}
+
+.top-nav-tab.disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.workspace-tab-label {
+  margin-right: 6px;
+}
+
+.workspace-tab-domain {
+  font-size: 11px;
+  font-weight: 400;
+  opacity: 0.75;
+  font-family: monospace;
+  letter-spacing: 0;
+}
