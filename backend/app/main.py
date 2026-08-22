@@ -22,7 +22,14 @@ async def lifespan(app: FastAPI):
     # Startup
     logger.info("Starting Financial Email Receiver API")
     ensure_directories()
-    
+    if not get_settings().PUBSUB_VERIFICATION_TOKEN:
+        logger.warning(
+            "PUBSUB_VERIFICATION_TOKEN is not set - the /api/webhooks/gmail endpoint "
+            "will accept unauthenticated requests from anyone who has the URL. "
+            "Fine for local hackathon testing; set it before exposing the endpoint "
+            "beyond your own machine."
+        )
+
     yield
     
     # Shutdown

@@ -1,12 +1,12 @@
 """Gmail webhook routes"""
-import base64
 import json
 import logging
 from typing import Dict, Any
 
-from fastapi import APIRouter, HTTPException, BackgroundTasks
+from fastapi import APIRouter, HTTPException, BackgroundTasks, Request
 
-from app.services.gmail_service import get_gmail_service
+from app.core.config import get_settings
+from app.services.gmail_service import get_gmail_service, decode_base64url
 
 logger = logging.getLogger(__name__)
 
@@ -14,19 +14,30 @@ router = APIRouter(prefix="/api/webhooks", tags=["webhooks"])
 
 
 @router.post("/gmail")
-async def gmail_webhook(body: Dict[str, Any], background_tasks: BackgroundTasks):
+async def gmail_webhook(request: Request, body: Dict[str, Any], background_tasks: BackgroundTasks):
     """
     Handle Gmail Pub/Sub push webhook.
-    
+
     Pub/Sub sends JSON with structure:
     {
         "message": {
             "data": "BASE64_DATA"  # Contains { "emailAddress": "...", "historyId": "..." }
         }
     }
-    
+
     Returns immediately with 200 OK, processes email in background.
     """
+    # Optional shared-secret check: if PUBSUB_VERIFICATION_TOKEN is configured,
+    # the Pub/Sub push subscription's endpoint URL must include a matching
+    # ?token= query param. This is a lightweight guard against anyone who
+    # discovers the (ngrok) URL triggering processing without authorization.
+    # See README "Security Notes" for the production-grade OIDC alternative.
+    settings = get_settings()
+    if settings.PUBSUB_VERIFICATION_TOKEN:
+        if request.query_params.get('token') != settings.PUBSUB_VERIFICATION_TOKEN:
+            logger.warning("Rejected webhook call with missing/invalid verification token")
+            raise HTTPException(status_code=403, detail="Invalid verification token")
+
     try:
         # Extract message data
         message_data = body.get('message', {}).get('data')
@@ -37,7 +48,7 @@ async def gmail_webhook(body: Dict[str, Any], background_tasks: BackgroundTasks)
         
         # Decode base64url data
         try:
-            decoded_data = base64.urlsafe_b64decode(message_data + '==')
+            decoded_data = decode_base64url(message_data)
             notification = json.loads(decoded_data)
         except (ValueError, json.JSONDecodeError) as e:
             logger.error(f"Failed to decode Pub/Sub message: {e}")

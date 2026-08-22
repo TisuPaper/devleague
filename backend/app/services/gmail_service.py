@@ -17,6 +17,18 @@ from app.core.config import get_settings
 logger = logging.getLogger(__name__)
 
 
+def _safe_log(value: str) -> str:
+    """Strip newlines/control chars so untrusted email fields can't forge log lines."""
+    if not value:
+        return value
+    return ''.join(ch for ch in value if ch.isprintable())
+
+
+def decode_base64url(data: str) -> bytes:
+    """Decode base64url data, restoring the '=' padding Gmail/Pub/Sub omit."""
+    return base64.urlsafe_b64decode(data + '=' * (-len(data) % 4))
+
+
 class GmailService:
     """Service for Gmail OAuth, watch, and email operations"""
     
@@ -40,64 +52,52 @@ class GmailService:
     
     def _get_credentials(self) -> Optional[Credentials]:
         """
-        Get Gmail OAuth credentials.
-        
-        First tries to load existing token.json. If not available or expired,
-        performs OAuth flow and saves new token.
+        Get Gmail OAuth credentials for the running server.
+
+        Only loads and (if needed) refreshes an existing token.json. Deliberately
+        does NOT launch the interactive browser OAuth flow — that flow opens a
+        local server and blocks waiting for a redirect, which would freeze this
+        single-threaded async server on every request until someone completes
+        it in a browser. Run `authenticate_gmail()` once, out-of-band, to create
+        token.json before starting the server (see README "Authenticate Gmail").
         """
-        creds = None
-        
-        # Try to load existing token
-        if Path(self.settings.TOKEN_FILE).exists():
+        if not Path(self.settings.TOKEN_FILE).exists():
+            logger.error(
+                f"{self.settings.TOKEN_FILE} not found. Run authenticate_gmail() once "
+                "to complete the OAuth flow and create it before starting the server."
+            )
+            return None
+
+        try:
+            creds = Credentials.from_authorized_user_file(
+                self.settings.TOKEN_FILE,
+                scopes=self.settings.GMAIL_SCOPES
+            )
+        except Exception as e:
+            logger.error(f"Failed to load {self.settings.TOKEN_FILE}: {e}")
+            return None
+
+        if creds.valid:
+            return creds
+
+        if creds.expired and creds.refresh_token:
             try:
-                creds = Credentials.from_authorized_user_file(
-                    self.settings.TOKEN_FILE,
-                    scopes=self.settings.GMAIL_SCOPES
+                creds.refresh(Request())
+                logger.info("Refreshed expired credentials")
+            except RefreshError as e:
+                logger.error(
+                    f"Failed to refresh credentials: {e}. Re-run authenticate_gmail()."
                 )
-                logger.info("Loaded existing token from token.json")
+                return None
+            try:
+                with open(self.settings.TOKEN_FILE, 'w') as token_file:
+                    token_file.write(creds.to_json())
             except Exception as e:
-                logger.warning(f"Failed to load token.json: {e}")
-                creds = None
-        
-        # If no valid token, perform OAuth flow
-        if not creds or not creds.valid:
-            if creds and creds.expired and creds.refresh_token:
-                try:
-                    creds.refresh(Request())
-                    logger.info("Refreshed expired credentials")
-                except RefreshError as e:
-                    logger.error(f"Failed to refresh credentials: {e}")
-                    creds = None
-            else:
-                # Perform full OAuth flow
-                try:
-                    if not Path(self.settings.CREDENTIALS_FILE).exists():
-                        logger.error(
-                            f"credentials.json not found at {self.settings.CREDENTIALS_FILE}. "
-                            "Please download from Google Cloud Console and place in root directory."
-                        )
-                        return None
-                    
-                    flow = InstalledAppFlow.from_client_secrets_file(
-                        self.settings.CREDENTIALS_FILE,
-                        scopes=self.settings.GMAIL_SCOPES
-                    )
-                    creds = flow.run_local_server(port=0)
-                    logger.info("Completed OAuth flow")
-                except Exception as e:
-                    logger.error(f"OAuth flow failed: {e}")
-                    return None
-            
-            # Save token for future use
-            if creds:
-                try:
-                    with open(self.settings.TOKEN_FILE, 'w') as token_file:
-                        token_file.write(creds.to_json())
-                    logger.info(f"Saved new token to {self.settings.TOKEN_FILE}")
-                except Exception as e:
-                    logger.error(f"Failed to save token: {e}")
-        
-        return creds
+                logger.error(f"Failed to save refreshed token: {e}")
+            return creds
+
+        logger.error(f"Token in {self.settings.TOKEN_FILE} is invalid. Re-run authenticate_gmail().")
+        return None
     
     def start_watch(self) -> Optional[Dict[str, Any]]:
         """
@@ -255,11 +255,11 @@ class GmailService:
             }
             
             if attachments:
-                attachment_names = ', '.join([att['filename'] for att in attachments])
+                attachment_names = ', '.join(_safe_log(att['filename']) for att in attachments)
                 logger.info(
                     f"New financial email received\n"
-                    f"  From: {sender}\n"
-                    f"  Subject: {subject}\n"
+                    f"  From: {_safe_log(sender)}\n"
+                    f"  Subject: {_safe_log(subject)}\n"
                     f"  Attachment: {attachment_names}"
                 )
             
@@ -300,24 +300,41 @@ class GmailService:
         
         return attachments
     
+    @staticmethod
+    def _sanitize_filename(filename: str, message_id: str) -> str:
+        """
+        Reduce an untrusted email attachment filename to a bare, safe basename.
+
+        Attachment filenames come from the sender and are not trustworthy input:
+        without this, a crafted filename (e.g. containing '../' or an absolute
+        path) could write outside the downloads directory (path traversal).
+        """
+        name = Path(filename or '').name  # drop any directory components
+        name = name.replace('\\', '_')    # backslashes survive .name on POSIX
+        name = name.strip().lstrip('.')   # avoid empty/hidden/relative-looking names
+        if not name:
+            name = f"attachment_{message_id[-8:]}"
+        return name
+
     def download_attachment(self, message_id: str, attachment: Dict[str, str]) -> Optional[str]:
         """
         Download attachment and save to downloads directory.
-        
+
         Handles duplicate filenames by including message ID.
         Returns path to saved file or None on failure.
         """
         if not self.service:
             logger.error("Gmail service not initialized")
             return None
-        
+
         attachment_id = attachment.get('attachmentId')
-        filename = attachment.get('filename', 'unknown')
-        
+        raw_filename = attachment.get('filename', 'unknown')
+        filename = self._sanitize_filename(raw_filename, message_id)
+
         if not attachment_id:
-            logger.warning(f"No attachmentId for {filename}")
+            logger.warning(f"No attachmentId for {_safe_log(raw_filename)}")
             return None
-        
+
         try:
             # Get attachment data
             att_data = self.service.users().messages().attachments().get(
@@ -325,33 +342,43 @@ class GmailService:
                 messageId=message_id,
                 id=attachment_id
             ).execute()
-            
+
             # Decode base64url data
-            file_data = base64.urlsafe_b64decode(att_data.get('data', ''))
-            
+            file_data = decode_base64url(att_data.get('data', ''))
+
             # Create safe filename (handle duplicates)
             download_path = Path(self.settings.DOWNLOAD_DIR)
             download_path.mkdir(exist_ok=True)
-            
+            download_root = download_path.resolve()
+
             file_path = download_path / filename
-            
+
             # If file exists, add message ID to avoid overwriting
             if file_path.exists():
-                name, ext = filename.rsplit('.', 1)
-                filename = f"{name}_{message_id[-8:]}.{ext}"
+                stem = Path(filename).stem
+                suffix = Path(filename).suffix
+                filename = f"{stem}_{message_id[-8:]}{suffix}"
                 file_path = download_path / filename
-            
+
+            # Defense in depth: confirm the resolved path is still inside downloads/
+            resolved_path = (download_path / filename).resolve()
+            if download_root != resolved_path.parent:
+                logger.error(
+                    f"Refusing to write attachment outside downloads dir: {_safe_log(raw_filename)}"
+                )
+                return None
+
             # Write file
-            with open(file_path, 'wb') as f:
+            with open(resolved_path, 'wb') as f:
                 f.write(file_data)
-            
-            logger.info(f"Attachment downloaded successfully:\n  {file_path}")
-            return str(file_path)
+
+            logger.info(f"Attachment downloaded successfully:\n  {resolved_path}")
+            return str(resolved_path)
         except HttpError as e:
             logger.error(f"Gmail API error downloading attachment: {e}")
             return None
         except Exception as e:
-            logger.error(f"Error downloading attachment {filename}: {e}")
+            logger.error(f"Error downloading attachment {_safe_log(raw_filename)}: {e}")
             return None
 
 
@@ -365,3 +392,41 @@ def get_gmail_service() -> GmailService:
     if _gmail_service is None:
         _gmail_service = GmailService()
     return _gmail_service
+
+
+def authenticate_gmail() -> bool:
+    """
+    Run the interactive OAuth flow once, out-of-band, and save token.json.
+
+    Opens a browser for consent and blocks until you complete it there — run
+    this manually from a terminal before starting the server, never from
+    within the running FastAPI app. Returns True on success.
+    """
+    settings = get_settings()
+
+    if not Path(settings.CREDENTIALS_FILE).exists():
+        logger.error(
+            f"{settings.CREDENTIALS_FILE} not found. Download an OAuth client "
+            "(Desktop app type) from Google Cloud Console and place it here."
+        )
+        return False
+
+    try:
+        flow = InstalledAppFlow.from_client_secrets_file(
+            settings.CREDENTIALS_FILE,
+            scopes=settings.GMAIL_SCOPES
+        )
+        creds = flow.run_local_server(port=0)
+    except Exception as e:
+        logger.error(f"OAuth flow failed: {e}")
+        return False
+
+    try:
+        with open(settings.TOKEN_FILE, 'w') as token_file:
+            token_file.write(creds.to_json())
+    except Exception as e:
+        logger.error(f"Failed to save token: {e}")
+        return False
+
+    logger.info(f"Completed OAuth flow, saved token to {settings.TOKEN_FILE}")
+    return True

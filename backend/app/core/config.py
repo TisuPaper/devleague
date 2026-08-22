@@ -15,6 +15,11 @@ class Settings(BaseSettings):
     # Google Cloud settings
     GOOGLE_CLOUD_PROJECT_ID: str = ""
     GMAIL_PUBSUB_TOPIC: str = "finance-mail"
+
+    # Optional shared-secret check on the Pub/Sub push webhook.
+    # If set, incoming requests must include a matching ?token= query param.
+    # Leave blank only for local hackathon testing; see README "Security Notes".
+    PUBSUB_VERIFICATION_TOKEN: str = ""
     
     # Gmail settings
     GMAIL_USER_ID: str = "me"

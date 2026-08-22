@@ -100,7 +100,7 @@ pip install -r requirements.txt
 #### Download OAuth Credentials
 
 1. Go to **Credentials** in Google Cloud Console
-2. Create **OAuth 2.0 Client ID** (Desktop application)
+2. Create **OAuth 2.0 Client ID** (Desktop application — not "Web application"; a Web client requires a pre-registered redirect URI and will fail `authenticate_gmail()`'s dynamic `localhost` redirect with `redirect_uri_mismatch`)
 3. Download the JSON file
 4. Save as `backend/credentials.json`
 
@@ -184,20 +184,17 @@ Content-Type: application/json
 
 ## Testing Full Workflow
 
-### Step 1: Authenticate Gmail
+Run Steps 1 and 2 **before** starting the server (Step 3) — `token.json` must already exist. The running server only loads/refreshes that token; it deliberately never launches the interactive browser flow itself, since that would block the whole (single-threaded) async app waiting on a browser redirect.
 
-Run a quick test to ensure credentials are set up:
+### Step 1: Authenticate Gmail (one-time, run manually)
 
-```python
-from app.services.gmail_service import get_gmail_service
-
-service = get_gmail_service()
-print("Gmail service initialized successfully!")
+```bash
+python -c "from app.services.gmail_service import authenticate_gmail; authenticate_gmail()"
 ```
 
-### Step 2: Start Gmail Watch
+This opens a browser for consent and saves `token.json`. Re-run it if the token is ever revoked or the refresh token stops working (the server logs will say so).
 
-Run the `start_gmail_watch()` function to set up the Gmail watch:
+### Step 2: Start Gmail Watch
 
 ```python
 from app.services.gmail_service import get_gmail_service
@@ -211,7 +208,7 @@ else:
     print("Failed to start watch")
 ```
 
-This logs the `historyId` and `expiration` time.
+This logs the `historyId` and `expiration` time. `watch()` expires after 7 days — re-run this periodically (e.g. via a daily cron) to keep notifications flowing.
 
 ### Step 3: Expose FastAPI with ngrok
 
@@ -237,17 +234,18 @@ https://your-ngrok-url.ngrok.io
 
 ### Step 4: Configure Pub/Sub Push Subscription
 
-Create a Pub/Sub subscription (if not exists):
+Create a Pub/Sub subscription (if not exists). If you set `PUBSUB_VERIFICATION_TOKEN` in `.env`, append it as a query param on the push endpoint so the webhook can check it:
 
 ```bash
 gcloud pubsub subscriptions create finance-mail-sub \
   --topic finance-mail \
-  --push-endpoint https://your-ngrok-url.ngrok.io/api/webhooks/gmail \
+  --push-endpoint "https://your-ngrok-url.ngrok.io/api/webhooks/gmail?token=YOUR_TOKEN" \
   --push-auth-service-account your-service-account@your-project.iam.gserviceaccount.com
 ```
 
 Replace:
 - `your-ngrok-url` with your ngrok URL
+- `YOUR_TOKEN` with the value of `PUBSUB_VERIFICATION_TOKEN` (omit `?token=...` entirely if you left it unset)
 - `your-service-account` with your Google Cloud service account
 
 ### Step 5: Send Test Email
@@ -322,6 +320,16 @@ The application handles:
 - ✅ Invalid/expired Gmail history ID
 
 None of these errors will crash the FastAPI application. They're logged and processing continues gracefully.
+
+## Security Notes
+
+This MVP intentionally keeps auth minimal, but two things matter even at this stage:
+
+- **Path traversal on downloads.** Attachment filenames come from the email sender and are untrusted input. `download_attachment()` reduces every filename to its bare basename and verifies the resolved path stays inside `downloads/` before writing, so a crafted filename (e.g. `../../etc/foo`) can't write outside that directory.
+- **Webhook authentication.** `/api/webhooks/gmail` is unauthenticated by default, which is fine while it's only reachable via a private ngrok tunnel you control. Before exposing it more broadly:
+  - Minimum: set `PUBSUB_VERIFICATION_TOKEN` in `.env` and include `?token=...` in the Pub/Sub push subscription's endpoint URL (shown above). The webhook rejects requests with a missing/incorrect token with `403`.
+  - Production-grade: configure the Pub/Sub subscription with `--push-auth-service-account` and verify the resulting OIDC `Authorization: Bearer` header (issuer, audience, signature) on each request instead of, or in addition to, the shared token. Not implemented here to keep the MVP simple.
+- **credentials.json / token.json / gmail_state.json / .env** are gitignored — never commit them. If any project ID, topic name, or token ever lands in a committed file (including `.env.example`), treat it as exposed and rotate/regenerate it.
 
 ## Next Steps
 
