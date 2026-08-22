@@ -20,6 +20,15 @@ const TopNav = ({ activeTab, setActiveTab, selectedClient }) => {
         </button>
 
         <button
+          id="tab-live"
+          className={`top-nav-tab ${activeTab === 'live' ? 'active' : ''}`}
+          onClick={() => setActiveTab('live')}
+          aria-current={activeTab === 'live' ? 'page' : undefined}
+        >
+          Live Inbox
+        </button>
+
+        <button
           id="tab-workspace"
           className={`top-nav-tab ${activeTab === 'workspace' ? 'active' : ''} ${!selectedClient ? 'disabled' : ''}`}
           onClick={() => selectedClient && setActiveTab('workspace')}
