@@ -6,7 +6,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import get_settings, ensure_directories
-from app.api import gmail
+from app.api import gmail, financial
 
 # Configure logging
 logging.basicConfig(
@@ -75,6 +75,9 @@ def create_app() -> FastAPI:
     
     # Include Gmail webhook routes
     app.include_router(gmail.router)
+
+    # Include financial analysis routes
+    app.include_router(financial.router)
     
     return app
 

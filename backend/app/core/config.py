@@ -21,6 +21,10 @@ class Settings(BaseSettings):
     # Leave blank only for local hackathon testing; see README "Security Notes".
     PUBSUB_VERIFICATION_TOKEN: str = ""
     
+    # Gemini AI settings
+    GEMINI_API_KEY: str = ""
+    GEMINI_MODEL: str = "gemini-2.0-flash"
+
     # Gmail settings
     GMAIL_USER_ID: str = "me"
     GMAIL_SCOPES: list = ["https://www.googleapis.com/auth/gmail.readonly"]
