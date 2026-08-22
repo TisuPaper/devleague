@@ -47,13 +47,13 @@
 
 .ws-progress-fill {
   height: 100%;
-  background: var(--primary);
+  background: var(--ink-faint);
   border-radius: var(--rounded-full);
   transform-origin: left;
   transition: transform 0.3s ease;
 }
 
-.ws-progress-fill.full { background: var(--accent-green); }
+.ws-progress-fill.full { background: var(--ink-muted); }
 
 /* Empty state */
 .ws-empty-state {

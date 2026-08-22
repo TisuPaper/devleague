@@ -188,7 +188,7 @@ h3 { @extend .heading-3; font-size: 22px; font-weight: 700; line-height: 1.27; l
   background-color: var(--canvas);
   border-radius: var(--rounded-lg);
   padding: var(--spacing-lg);
-  border: 1px solid var(--hairline);
+  box-shadow: var(--shadow-soft);
 }
 
 /* Soft elevated card */

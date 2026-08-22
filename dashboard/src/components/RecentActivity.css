@@ -63,7 +63,7 @@
 
 .activity-timestamp {
   font-size: 12px;
-  color: var(--ink-faint);
+  color: var(--ink-muted);
   margin-top: 2px;
 }
 
