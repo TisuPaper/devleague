@@ -1,0 +1,33 @@
+.dashboard-page {
+  padding: var(--spacing-xxl);
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.dashboard-layout {
+  display: flex;
+  gap: var(--spacing-xxl);
+  align-items: flex-start;
+}
+
+.dashboard-main {
+  flex: 1;
+  min-width: 0; /* allows child tables to shrink properly */
+}
+
+.dashboard-sidebar {
+  width: 280px;
+  flex-shrink: 0;
+  position: sticky;
+  top: var(--spacing-xxl);
+}
+
+@media (max-width: 1080px) {
+  .dashboard-layout {
+    flex-direction: column;
+  }
+  .dashboard-sidebar {
+    width: 100%;
+    position: static;
+  }
+}

@@ -1,0 +1,121 @@
+.risk-alerts {
+  display: flex;
+  flex-direction: column;
+}
+
+.alerts-header {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--border-light);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.alerts-header h3 {
+  font-size: 1rem;
+  margin: 0;
+}
+
+.alerts-list {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.alert-item {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.2s;
+}
+
+.alert-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 4px;
+}
+
+.severity-danger::before { background-color: var(--accent-danger); }
+.severity-warning::before { background-color: var(--accent-warning); }
+
+.severity-danger .alert-icon-wrapper { color: var(--accent-danger); }
+.severity-warning .alert-icon-wrapper { color: var(--accent-warning); }
+
+.alert-icon-wrapper {
+  margin-top: 2px;
+}
+
+.alert-content {
+  flex: 1;
+}
+
+.alert-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.5rem;
+}
+
+.alert-header h4 {
+  font-size: 0.95rem;
+  margin: 0;
+  color: var(--text-primary);
+}
+
+.alert-item p {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+  margin-bottom: 0.75rem;
+}
+
+.alert-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px dashed var(--border-light);
+}
+
+.confidence-score {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  background-color: var(--accent-primary);
+  border-radius: 50%;
+}
+
+.explain-btn {
+  background: transparent;
+  border: none;
+  color: var(--accent-primary);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.75rem;
+  cursor: pointer;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.action-btn.secondary:hover {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+}

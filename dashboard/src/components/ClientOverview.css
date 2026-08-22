@@ -1,0 +1,107 @@
+.client-overview {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: var(--spacing-lg);
+  padding-top: var(--spacing-md);
+}
+
+@media (max-width: 900px) {
+  .client-overview { grid-template-columns: 1fr; }
+}
+
+.overview-card {
+  padding: 0;
+  overflow: hidden;
+}
+
+.overview-card-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--hairline);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* Document Table */
+.doc-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.doc-table th {
+  padding: 12px 16px;
+  background: var(--canvas-soft);
+  border-bottom: 1px solid var(--hairline);
+  text-align: left;
+}
+
+.doc-row {
+  border-bottom: 1px solid var(--hairline);
+}
+
+.doc-row:last-child { border-bottom: none; }
+
+.doc-row-issue {
+  background: rgba(221, 91, 0, 0.04); /* very faint orange tint */
+}
+
+.doc-row td {
+  padding: 14px 16px;
+  vertical-align: middle;
+}
+
+/* Activity Timeline */
+.activity-timeline {
+  list-style: none;
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.timeline-item {
+  display: flex;
+  gap: 12px;
+  padding-bottom: 16px;
+  position: relative;
+}
+
+.timeline-item:not(:last-child)::before {
+  content: '';
+  position: absolute;
+  left: 3px;
+  top: 14px;
+  bottom: 0;
+  width: 1px;
+  background: var(--hairline);
+}
+
+.timeline-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--rounded-full);
+  margin-top: 4px;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.timeline-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.timeline-note {
+  font-size: 14px;
+  color: var(--ink-secondary);
+  line-height: 1.4;
+}
+
+.timeline-time {
+  font-size: 12px;
+  color: var(--ink-faint);
+}
+

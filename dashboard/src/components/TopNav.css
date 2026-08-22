@@ -1,0 +1,95 @@
+.top-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 24px;
+  background: var(--canvas);
+  border-bottom: 1px solid var(--hairline);
+  flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.top-nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+}
+
+.exia-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  background: var(--ink);
+  color: var(--canvas);
+  border-radius: var(--rounded-sm);
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.exia-title {
+  font-weight: 600;
+  font-size: 16px;
+  color: var(--ink);
+  letter-spacing: -0.02em;
+}
+
+.top-nav-tabs {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 2;
+  justify-content: center;
+}
+
+/* This empty div will push the tabs to the center if we use flex-1 on brand and this */
+.top-nav::after {
+  content: '';
+  flex: 1;
+}
+
+.top-nav-tab {
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--ink-muted);
+  background: transparent;
+  border: none;
+  border-radius: var(--rounded-md);
+  padding: 6px 14px;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+  white-space: nowrap;
+}
+
+.top-nav-tab:hover:not(.disabled) {
+  background: var(--canvas-soft);
+  color: var(--ink);
+}
+
+.top-nav-tab.active {
+  background: var(--canvas-soft);
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.top-nav-tab.disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.workspace-tab-label {
+  margin-right: 6px;
+}
+
+.workspace-tab-domain {
+  font-size: 12px;
+  font-weight: 400;
+  opacity: 0.75;
+  font-family: inherit;
+}
+

@@ -1,0 +1,207 @@
+.client-detail {
+  padding: var(--spacing-xxl);
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+/* Breadcrumb */
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.breadcrumb-link {
+  background: none;
+  border: none;
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--ink-muted);
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.1s;
+}
+
+.breadcrumb-link:hover {
+  color: var(--ink);
+}
+
+.breadcrumb-sep {
+  font-size: 14px;
+  color: var(--hairline-strong);
+}
+
+.breadcrumb-current {
+  font-size: 14px;
+  color: var(--ink);
+  font-weight: 500;
+}
+
+/* Client Header */
+.client-header {
+  padding: var(--spacing-xl);
+}
+
+.client-header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--spacing-xl);
+  gap: var(--spacing-md);
+}
+
+.client-header-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.client-name-row {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.client-email-btn {
+  font-size: 14px;
+  flex-shrink: 0;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Status dots */
+.status-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--rounded-full);
+  flex-shrink: 0;
+}
+
+/* Stats Row */
+.client-stats-row {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  background: var(--canvas);
+  border: 1px solid var(--hairline);
+  border-radius: var(--rounded-lg);
+  overflow: hidden;
+}
+
+.client-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  padding: 16px 24px;
+  flex: 1;
+}
+
+.stat-divider {
+  width: 1px;
+  height: 48px;
+  background: var(--hairline);
+  flex-shrink: 0;
+}
+
+.stat-value {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.stat-issue { color: var(--accent-orange); }
+.stat-ok    { color: var(--accent-green); }
+
+.stat-label {
+  color: var(--ink-muted);
+}
+
+/* Sub-tabs */
+.sub-tab-bar {
+  display: flex;
+  gap: 0;
+  border-bottom: 2px solid var(--hairline);
+}
+
+.sub-tab {
+  background: none;
+  border: none;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--steel);
+  padding: 10px 20px;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  transition: color 0.15s, border-color 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.sub-tab:hover {
+  color: var(--ink);
+}
+
+.sub-tab-active {
+  color: var(--ink-deep);
+  border-bottom-color: var(--ink-deep);
+}
+
+.sub-tab-badge {
+  background: #e65100;
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  border-radius: var(--rounded-full);
+  padding: 1px 6px;
+  line-height: 14px;
+}
+
+/* Empty State */
+.workspace-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  height: 100%;
+  padding: 60px 24px;
+  color: var(--stone);
+}
+
+.workspace-empty-icon {
+  width: 80px;
+  height: 80px;
+  background: var(--surface-soft);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+.workspace-empty-state h3 {
+  font-size: 20px;
+  color: var(--ink-deep);
+  margin-bottom: 12px;
+}
+
+.workspace-empty-state p {
+  font-size: 15px;
+  max-width: 420px;
+  line-height: 1.6;
+  margin-bottom: 32px;
+}

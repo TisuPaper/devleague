@@ -1,0 +1,116 @@
+.analysis-tab {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.analysis-grid {
+  display: grid;
+  gap: var(--spacing-xl);
+  height: 100%;
+}
+
+.analysis-grid.issue-state {
+  grid-template-columns: 1fr 1.5fr;
+}
+
+.analysis-grid.review-state {
+  grid-template-columns: 1.5fr 1fr;
+}
+
+/* Issue State Specifics */
+.error-panel {
+  background-color: var(--surface-soft);
+  border-top: 4px solid var(--semantic-error);
+}
+
+.error-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-xl);
+  padding-bottom: var(--spacing-md);
+  border-bottom: 1px solid var(--hairline);
+}
+
+.error-details {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.detail-row {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  font-size: 14px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: var(--spacing-md);
+}
+
+.form-group label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--slate);
+}
+
+.email-body {
+  font-family: inherit;
+  font-size: 14px;
+  resize: vertical;
+}
+
+/* Review State Specifics */
+.border-bottom {
+  border-bottom: 1px solid var(--hairline);
+}
+
+.border-none {
+  border: none !important;
+  padding: 0 !important;
+}
+
+.ai-panels-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.insights-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.insights-list li {
+  position: relative;
+  padding-left: 16px;
+  font-size: 14px;
+  color: var(--ink);
+  margin-bottom: 8px;
+}
+
+.insights-list li::before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  color: var(--brand-purple);
+  font-weight: bold;
+}
+
+.metrics-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.text-error { color: var(--semantic-error); }
+.font-medium { font-weight: 500; }
+.mt-4 { margin-top: 16px; }
+.mt-6 { margin-top: 24px; }
+.mb-2 { margin-bottom: 8px; }
+.pb-2 { padding-bottom: 8px; }

@@ -1,0 +1,143 @@
+.analysis-workspace {
+  padding-top: var(--spacing-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+/* Stat Cards Row */
+.ws-stats-row {
+  display: flex;
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
+}
+
+.ws-stat-card {
+  flex: 1;
+  min-width: 140px;
+  background: var(--canvas);
+  border: 1px solid var(--hairline);
+  border-radius: var(--rounded-lg);
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ws-stat-warn { border-left: 3px solid var(--accent-orange); }
+.ws-stat-ok   { border-left: 3px solid var(--accent-green); }
+.ws-stat-action { border-left: 3px solid var(--primary); }
+
+.ws-stat-value {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--ink);
+  line-height: 1.2;
+}
+
+.ws-stat-label {
+  color: var(--ink-muted);
+}
+
+.ws-progress-bar {
+  height: 4px;
+  background: var(--canvas-soft);
+  border-radius: var(--rounded-full);
+  margin-top: 6px;
+  overflow: hidden;
+}
+
+.ws-progress-fill {
+  height: 100%;
+  background: var(--primary);
+  border-radius: var(--rounded-full);
+  transition: width 0.3s ease;
+}
+
+.ws-progress-fill.full { background: var(--accent-green); }
+
+/* Empty state */
+.ws-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 12px;
+  padding: 60px 24px;
+}
+
+/* Main layout */
+.ws-main {
+  display: grid;
+  gap: var(--spacing-lg);
+}
+
+.ws-main-split {
+  grid-template-columns: 380px 1fr;
+}
+
+.ws-main-full {
+  grid-template-columns: 1fr;
+}
+
+@media (max-width: 1080px) {
+  .ws-main-split { grid-template-columns: 1fr; }
+}
+
+/* Column headers */
+.ws-column {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.ws-col-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Issue List */
+.ws-issue-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+/* Report Panel */
+.ws-report-panel {
+  display: flex;
+  flex-direction: column;
+  background: var(--canvas);
+  border-radius: var(--rounded-lg);
+  border: 1px solid var(--hairline);
+  overflow: hidden;
+  height: 600px;
+}
+
+.ws-panel-header {
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--hairline);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.ws-panel-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink-deep);
+}
+
+.ws-panel-sub {
+  font-size: 12px;
+  color: var(--stone);
+}
+
+.ws-issues-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  overflow-y: auto;
+}
