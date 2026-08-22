@@ -1,0 +1,71 @@
+.issue-card {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--hairline);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: background 0.15s;
+}
+
+.issue-card:last-child {
+  border-bottom: none;
+}
+
+.issue-card-sent {
+  background: #f9fafb;
+  opacity: 0.8;
+}
+
+.issue-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.issue-type-badge {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: var(--rounded-full);
+}
+
+.issue-type-missing  { background: #fff3e0; color: #e65100; }
+.issue-type-mismatch { background: #fff8e1; color: #7b3f00; }
+
+.issue-sent-indicator {
+  font-size: 11px;
+  color: #2e7d32;
+  font-weight: 500;
+}
+
+.issue-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.issue-problem {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-deep);
+  line-height: 1.4;
+}
+
+.issue-detail {
+  font-size: 12px;
+  color: var(--slate);
+  line-height: 1.5;
+}
+
+.issue-card-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.issue-btn {
+  font-size: 12px;
+  padding: 7px 14px;
+}

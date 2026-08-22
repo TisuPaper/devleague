@@ -1,0 +1,138 @@
+.analysis-workspace {
+  padding-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Stat Cards Row */
+.ws-stats-row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.ws-stat-card {
+  flex: 1;
+  min-width: 140px;
+  background: var(--canvas);
+  border: 1px solid var(--hairline);
+  border-radius: var(--rounded-lg);
+  padding: 14px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ws-stat-warn { border-left: 3px solid #e65100; }
+.ws-stat-ok   { border-left: 3px solid #2e7d32; }
+.ws-stat-action { border-left: 3px solid var(--primary); }
+
+.ws-stat-value {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--ink-deep);
+  line-height: 1.2;
+}
+
+.ws-stat-label {
+  font-size: 11px;
+  color: var(--stone);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.ws-progress-bar {
+  height: 3px;
+  background: var(--hairline);
+  border-radius: 2px;
+  margin-top: 4px;
+  overflow: hidden;
+}
+
+.ws-progress-fill {
+  height: 100%;
+  background: var(--primary);
+  border-radius: 2px;
+}
+
+.ws-progress-fill.full { background: #2e7d32; }
+
+/* Empty state */
+.ws-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 12px;
+  padding: 60px 24px;
+  color: var(--stone);
+}
+
+.ws-empty-state h3 {
+  font-size: 16px;
+  color: var(--slate);
+}
+
+.ws-empty-state p {
+  font-size: 14px;
+  max-width: 420px;
+  line-height: 1.6;
+  color: var(--stone);
+}
+
+/* Main layout */
+.ws-main {
+  display: grid;
+  gap: 16px;
+}
+
+.ws-main-split {
+  grid-template-columns: 380px 1fr;
+}
+
+.ws-main-full {
+  grid-template-columns: 1fr;
+}
+
+@media (max-width: 1000px) {
+  .ws-main-split { grid-template-columns: 1fr; }
+}
+
+/* Panel */
+.ws-issues-panel,
+.ws-report-panel {
+  background: var(--canvas);
+  border: 1px solid var(--hairline);
+  border-radius: var(--rounded-lg);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.ws-panel-header {
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--hairline);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.ws-panel-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink-deep);
+}
+
+.ws-panel-sub {
+  font-size: 12px;
+  color: var(--stone);
+}
+
+.ws-issues-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  overflow-y: auto;
+}
