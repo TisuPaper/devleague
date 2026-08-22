@@ -1,0 +1,149 @@
+.client-overview {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 16px;
+  padding-top: 16px;
+}
+
+@media (max-width: 900px) {
+  .client-overview { grid-template-columns: 1fr; }
+}
+
+.overview-card {
+  padding: 0;
+  overflow: hidden;
+}
+
+.overview-card-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--hairline);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.overview-card-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink-deep);
+}
+
+.overview-card-sub {
+  font-size: 12px;
+  color: var(--stone);
+}
+
+/* Document Table */
+.doc-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.doc-table thead th {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--stone);
+  padding: 10px 20px;
+  text-align: left;
+  background: var(--surface-soft);
+  border-bottom: 1px solid var(--hairline);
+}
+
+.doc-row {
+  border-bottom: 1px solid var(--hairline-soft);
+}
+
+.doc-row:last-child { border-bottom: none; }
+
+.doc-row-issue {
+  background: #fffbf7;
+}
+
+.doc-row td {
+  padding: 12px 20px;
+  font-size: 13px;
+  vertical-align: middle;
+}
+
+.doc-name {
+  font-weight: 500;
+  color: var(--ink-deep);
+}
+
+.doc-type, .doc-submitted {
+  color: var(--slate);
+  font-family: monospace;
+  font-size: 12px;
+}
+
+.doc-status-badge {
+  font-size: 12px;
+  font-weight: 500;
+  padding: 2px 8px;
+  border-radius: var(--rounded-full);
+}
+
+.doc-status-complete { color: #2e7d32; background: #e8f5e9; }
+.doc-status-missing  { color: #e65100; background: #fff3e0; }
+.doc-status-mismatch { color: #7b3f00; background: #fff8e1; }
+
+/* Activity Timeline */
+.activity-timeline {
+  list-style: none;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.timeline-item {
+  display: flex;
+  gap: 12px;
+  padding-bottom: 16px;
+  position: relative;
+}
+
+.timeline-item:not(:last-child)::before {
+  content: '';
+  position: absolute;
+  left: 3px;
+  top: 14px;
+  bottom: 0;
+  width: 1px;
+  background: var(--hairline);
+}
+
+.timeline-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-top: 4px;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.act-dot-success { background: #2e7d32; }
+.act-dot-issue   { background: #e65100; }
+.act-dot-info    { background: var(--stone); }
+
+.timeline-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.timeline-note {
+  font-size: 13px;
+  color: var(--charcoal);
+  line-height: 1.4;
+}
+
+.timeline-time {
+  font-size: 11px;
+  color: var(--muted);
+}
