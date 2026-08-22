@@ -3,8 +3,9 @@ import asyncio
 import json
 import logging
 from datetime import datetime, timezone
+from email.utils import parseaddr
 from pathlib import Path
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 
 from fastapi import APIRouter, HTTPException, BackgroundTasks, Request
 
@@ -14,6 +15,7 @@ from app.services.extraction_service import extract_text
 from app.services.pii_service import redact_pii
 from app.services.company_service import derive_client_company
 from app.services.analysis_service import analyze_financial_document
+from app.services.store_service import record_processed_document
 
 logger = logging.getLogger(__name__)
 
@@ -156,7 +158,12 @@ async def process_new_emails(email_address: str, history_id: str):
                         try:
                             downloaded_path = gmail_service.download_attachment(message_id, attachment)
                             if downloaded_path:
-                                await _process_attachment_pipeline(downloaded_path, message_id, sender)
+                                await _process_attachment_pipeline(
+                                    downloaded_path,
+                                    message_id,
+                                    sender,
+                                    attachment.get('filename', ''),
+                                )
                         except Exception as e:
                             logger.error(f"Error downloading attachment: {e}")
                             # Continue with next attachment
@@ -194,9 +201,14 @@ def _sender_domain_allowed(sender: str) -> bool:
     return domain in allowed
 
 
-async def _process_attachment_pipeline(downloaded_path: str, message_id: str, sender: str) -> None:
+async def _process_attachment_pipeline(
+    downloaded_path: str,
+    message_id: str,
+    sender: str,
+    original_filename: str = '',
+) -> None:
     """
-    Run extract -> redact -> save -> AI analysis on a just-downloaded
+    Run extract -> redact -> AI analysis -> persist on a just-downloaded
     attachment, all within this same background task.
 
     Any failure here is logged and swallowed -- a bad file, an unparseable
@@ -206,10 +218,24 @@ async def _process_attachment_pipeline(downloaded_path: str, message_id: str, se
     """
     settings = get_settings()
     file_path = Path(downloaded_path)
+    company_info = derive_client_company(sender)
+    display_name = original_filename or file_path.name
 
     text = extract_text(file_path)
     if text is None:
         logger.warning(f"No text extracted from {file_path.name}, skipping PII/analysis stages")
+        # Still record it: the dashboard needs to surface unreadable
+        # attachments as a follow-up issue rather than silently dropping them.
+        _record_for_dashboard(
+            company_info=company_info,
+            sender=sender,
+            message_id=message_id,
+            original_filename=display_name,
+            stored_path=str(file_path),
+            redaction_counts={},
+            analysis=None,
+            extraction_ok=False,
+        )
         return
 
     redacted_text, redaction_counts = redact_pii(text)
@@ -220,10 +246,19 @@ async def _process_attachment_pipeline(downloaded_path: str, message_id: str, se
     else:
         logger.info(f"No PII patterns matched in {file_path.name}")
 
-    company_info = derive_client_company(sender)
-
     ai_result = await analyze_financial_document(
         redacted_text, message_id, company_info.get('client_company')
+    )
+
+    _record_for_dashboard(
+        company_info=company_info,
+        sender=sender,
+        message_id=message_id,
+        original_filename=display_name,
+        stored_path=str(file_path),
+        redaction_counts=redaction_counts,
+        analysis=ai_result,
+        extraction_ok=True,
     )
 
     try:
@@ -244,3 +279,44 @@ async def _process_attachment_pipeline(downloaded_path: str, message_id: str, se
         logger.info(f"Saved processed output: {output_path}")
     except Exception as e:
         logger.error(f"Failed to save processed output for {file_path.name}: {e}")
+
+
+def _record_for_dashboard(
+    company_info: Dict[str, Any],
+    sender: str,
+    message_id: str,
+    original_filename: str,
+    stored_path: str,
+    redaction_counts: Dict[str, int],
+    analysis: Optional[Dict[str, Any]],
+    extraction_ok: bool,
+) -> None:
+    """Persist this attachment's result for the dashboard API to serve.
+
+    Failures are logged, never raised: the file has already been downloaded,
+    redacted, and written to processed/, so a storage hiccup here must not
+    lose that work or break the rest of the batch.
+    """
+    domain = company_info.get('client_company')
+    if not domain:
+        logger.warning(
+            f"No client domain parsed from sender for message {message_id}; "
+            "skipping dashboard record"
+        )
+        return
+
+    _, contact_email = parseaddr(sender or '')
+    try:
+        record_processed_document(
+            domain=domain,
+            is_generic_domain=bool(company_info.get('is_generic_domain')),
+            contact_email=contact_email,
+            message_id=message_id,
+            original_filename=original_filename,
+            stored_path=stored_path,
+            redaction_counts=redaction_counts,
+            analysis=analysis,
+            extraction_ok=extraction_ok,
+        )
+    except Exception as e:
+        logger.error(f"Failed to record dashboard entry for message {message_id}: {e}")

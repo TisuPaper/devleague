@@ -26,9 +26,27 @@ MAX_CHARS_TO_ANALYZE = 60_000
 # Hard ceiling on how long we'll wait for Gemini before giving up.
 REQUEST_TIMEOUT_SECONDS = 60
 
+# Canonical document types the dashboard tracks. Kept in sync with
+# DOCUMENT_TYPE_LABELS in client_view_service.py -- the model must classify
+# each attachment into exactly one of these (or "other").
+DOCUMENT_TYPES = (
+    "income_statement",
+    "balance_sheet",
+    "cash_flow",
+    "general_ledger",
+    "payroll_summary",
+    "ar_aging",
+    "other",
+)
+
 RESPONSE_SCHEMA = {
     "type": "object",
     "properties": {
+        "document_type": {"type": "string", "enum": list(DOCUMENT_TYPES)},
+        "readable": {"type": "boolean"},
+        "company_name": {"type": "string"},
+        "industry": {"type": "string"},
+        "period": {"type": "string"},
         "summary": {"type": "string"},
         "key_figures": {
             "type": "array",
@@ -46,7 +64,10 @@ RESPONSE_SCHEMA = {
         "sentiment": {"type": "string", "enum": ["positive", "neutral", "negative"]},
         "confidence": {"type": "string", "enum": ["high", "medium", "low"]},
     },
-    "required": ["summary", "key_figures", "risk_flags", "sentiment", "confidence"],
+    "required": [
+        "document_type", "readable", "company_name", "industry", "period",
+        "summary", "key_figures", "risk_flags", "sentiment", "confidence",
+    ],
 }
 
 REQUIRED_KEYS = frozenset(RESPONSE_SCHEMA["required"])
@@ -56,14 +77,36 @@ identifying information (PII) redacted. Placeholders like [REDACTED_EMAIL] or \
 [REDACTED_SSN] are expected and are not part of the original document -- do not \
 comment on them, just treat that information as unavailable.
 
-Analyze the remaining financial content and respond with a JSON object with these fields:
-- summary: a 2-4 sentence plain-English summary of the document
-- key_figures: notable numbers found, each with a label, the value as written, and a \
-period if one is stated (empty string if not)
-- risk_flags: any notable risk, concern, or red flag found (empty list if none)
-- sentiment: one of positive, neutral, negative
+The document was received as an email attachment from the domain "{client_domain}".
+
+Respond with a JSON object with these fields:
+- document_type: classify this document as exactly one of:
+    income_statement  (profit & loss / income statement)
+    balance_sheet     (statement of financial position)
+    cash_flow         (cash flow statement)
+    general_ledger    (transaction-level ledger / trial balance)
+    payroll_summary   (payroll, salary, or headcount cost report)
+    ar_aging          (accounts receivable aging / outstanding invoices by age)
+    other             (anything that is not clearly one of the above)
+  Use "other" when genuinely unsure -- do not guess a specific type to be helpful.
+- readable: true if the extracted text contains usable financial content; false if it \
+is empty, garbled, or clearly failed to extract (e.g. a scanned image with no text).
+- company_name: the company the document belongs to, exactly as written in the \
+document. Empty string if not stated -- do NOT infer it from the email domain.
+- industry: the company's industry if the document makes it clear; empty string otherwise.
+- period: the reporting period the document covers (e.g. "Q3 2026", "FY2025"); empty \
+string if not stated.
+- summary: a 2-4 sentence plain-English summary of the document.
+- key_figures: notable numbers found, each with a label, the value exactly as written \
+(keep the original currency and units), and a period if one is stated (empty string if not).
+- risk_flags: any notable risk, concern, anomaly, or red flag found (empty list if none).
+- sentiment: one of positive, neutral, negative.
 - confidence: one of high, medium, low -- how confident you are in this analysis given \
-the document's clarity and completeness
+the document's clarity and completeness.
+
+Report only what the document actually supports. Do not invent figures, and do not fill \
+gaps with plausible-sounding numbers -- an empty list or empty string is the correct \
+answer when the document does not say.
 
 Document text:
 ---
@@ -96,7 +139,10 @@ async def analyze_financial_document(
             f"{MAX_CHARS_TO_ANALYZE} chars before sending to Gemini"
         )
 
-    prompt = ANALYSIS_PROMPT.format(document_text=text_to_analyze)
+    prompt = ANALYSIS_PROMPT.format(
+        document_text=text_to_analyze,
+        client_domain=client_company or "unknown",
+    )
 
     try:
         from google import genai

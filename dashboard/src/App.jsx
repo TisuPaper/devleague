@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import TopNav from './components/TopNav';
 import DashboardPage from './components/DashboardPage';
 import ClientDetail from './components/ClientDetail';
+import LiveInboxPage from './components/LiveInboxPage';
 import './index.css';
 
 function App() {
@@ -29,6 +30,8 @@ function App() {
       <div className="page-area">
         {activeTab === 'clients' ? (
           <DashboardPage onSelectClient={handleSelectClient} />
+        ) : activeTab === 'live' ? (
+          <LiveInboxPage />
         ) : (
           <ClientDetail
             client={selectedClient}

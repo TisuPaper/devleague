@@ -84,7 +84,34 @@ Output lands in `processed/<original_filename>.json` (gitignored, same as `downl
 - **The original downloaded file in `downloads/` is never redacted or deleted** — only the derived `processed/*.json` output is. If you need a retention/deletion policy for the raw attachments themselves, that's a separate decision to make later.
 - Documents longer than 60,000 characters are truncated before being sent to Gemini (logged when it happens) to keep latency/cost bounded and stay under context limits.
 - `client_company` is just the sender's email domain — it's a hint, not a verified identity. Spoofed `From` headers aren't detected here (no SPF/DKIM/DMARC verification in this pipeline).
-- No result is persisted anywhere but the local `processed/*.json` file — there's no database or dashboard yet (by design, per the original scope).
+- No result is persisted anywhere but local JSON files under `processed/` — there's no database yet (by design, per the original scope).
+
+## Dashboard Integration
+
+Processed results are aggregated per client domain and served to the `dashboard/` frontend.
+
+**Backend side:**
+- `app/services/store_service.py` — writes one record per client domain to `processed/clients/<domain>.json` (atomic temp-file + `os.replace`; gitignored). Idempotent per `(message_id, filename)`, so a Pub/Sub redelivery updates an entry rather than duplicating it. Domains come from email headers, so they're validated against a strict hostname pattern before being used as a filename — never trusted as a path.
+- `app/services/client_view_service.py` — maps stored records into the dashboard's client shape: the six-document checklist, derived issues (missing docs / unreadable files, each with a follow-up email draft), report sections, and a processing log.
+- `GET /api/clients` (`app/api/clients.py`) — read-only; returns `{"clients": [...]}`, empty before anything is processed. **Deliberately excludes the redacted document text** — the dashboard only needs derived analysis, so full document bodies never reach the browser.
+
+**Frontend side** (all additive — no existing component's markup or behaviour was changed):
+- `src/api/liveApi.js`, `src/hooks/useProcessedClients.js` — polls `/api/clients` every 5s. Polling rather than SSE/WebSocket on purpose: stateless, survives backend restarts and tunnel drops with no reconnect logic, and the upstream pipeline already takes longer than the poll interval. A failed poll keeps the last good data and only flips a connection badge.
+- `src/components/LiveInboxPage.jsx`, `LiveClientPanel.jsx`, `LiveInbox.css` — a new **Live Inbox** tab showing only real processed clients.
+
+**Why real data is on its own tab rather than merged into the existing Clients table:** `ReportPreview.jsx` renders hardcoded sample financials (`SGD 4,500,000` etc.) from its own `SECTION_CONTENT` constant. Routing a real client through it would display invented figures as that client's actuals — unacceptable for a financial tool. The Live Inbox renders only AI output derived from documents actually received, and shows sections as locked when the backing document is missing.
+
+**Running both:**
+```bash
+# terminal 1
+cd backend && uvicorn app.main:app --reload --port 8000
+
+# terminal 2
+cd dashboard && npm install && npm run dev
+```
+Open the dev server URL and pick the **Live Inbox** tab. Vite proxies `/api` to `127.0.0.1:8000` (see `dashboard/vite.config.js`), so the browser makes same-origin requests and no CORS preflight is involved; set `VITE_API_BASE_URL` if the backend runs elsewhere.
+
+**AI prompt note:** the Gemini prompt now also classifies each attachment into one of the six required document types (or `other`) and reports a `readable` flag, plus optional `company_name` / `industry` / `period` read from the document. It's explicitly instructed not to infer the company from the email domain and not to invent figures — empty string / empty list is the correct answer when a document doesn't say. Document classification drives which report sections unlock, so a wrong classification shows up as a missing document rather than a wrong analysis.
 
 **Concurrency note:** Pub/Sub is at-least-once delivery — it can and does redeliver the same notification. `process_new_emails()` is wrapped in a process-wide `asyncio.Lock` so overlapping deliveries of the same notification serialize instead of racing on `gmail_state.json`'s `last_history_id` and reprocessing (and re-billing Gemini for) the same message. This is a single-process lock — sufficient here since the app runs as one process, but it would need a different mechanism (e.g. a DB row lock) under multiple worker processes.
 
@@ -97,14 +124,17 @@ backend/
 │   ├── main.py                 # FastAPI app factory
 │   ├── api/
 │   │   ├── __init__.py
-│   │   └── gmail.py            # Gmail webhook routes
+│   │   ├── gmail.py            # Gmail webhook routes
+│   │   └── clients.py          # GET /api/clients for the dashboard
 │   ├── services/
 │   │   ├── __init__.py
 │   │   ├── gmail_service.py       # Gmail API operations
 │   │   ├── extraction_service.py  # PDF/XLSX/XLS/CSV text extraction
 │   │   ├── pii_service.py         # Regex-based PII redaction
 │   │   ├── company_service.py     # Client-company detection from sender domain
-│   │   └── analysis_service.py    # Gemini-based financial analysis
+│   │   ├── analysis_service.py    # Gemini-based financial analysis
+│   │   ├── store_service.py       # Per-client record persistence
+│   │   └── client_view_service.py # Maps records to the dashboard's shape
 │   └── core/
 │       ├── __init__.py
 │       └── config.py           # Settings and environment

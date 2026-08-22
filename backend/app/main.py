@@ -6,7 +6,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import get_settings, ensure_directories
-from app.api import gmail
+from app.api import gmail, clients
 
 # Configure logging
 logging.basicConfig(
@@ -48,10 +48,18 @@ def create_app() -> FastAPI:
         debug=settings.DEBUG,
     )
     
-    # Add CORS middleware for local development
+    # Add CORS middleware for local development. 5173/4173 are Vite's dev and
+    # preview ports for the dashboard frontend. Explicit origins only -- never
+    # a wildcard, since allow_credentials is on.
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=["http://localhost:3000", "http://localhost:8000"],
+        allow_origins=[
+            "http://localhost:3000",
+            "http://localhost:8000",
+            "http://localhost:5173",
+            "http://127.0.0.1:5173",
+            "http://localhost:4173",
+        ],
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
@@ -75,6 +83,9 @@ def create_app() -> FastAPI:
     
     # Include Gmail webhook routes
     app.include_router(gmail.router)
+
+    # Read-only API serving backend-processed clients to the dashboard
+    app.include_router(clients.router)
     
     return app
 
