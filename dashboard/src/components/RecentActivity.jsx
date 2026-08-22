@@ -11,7 +11,7 @@ const RecentActivity = ({ activities }) => {
   return (
     <div className="activity-card card-base">
       <div className="activity-card-header">
-        <h2 className="activity-card-title">Recent Activity</h2>
+        <h2 className="heading-3">Recent Activity</h2>
       </div>
       <ul className="activity-list" aria-label="Recent activity feed">
         {activities.map(item => {

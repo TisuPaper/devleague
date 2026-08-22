@@ -1,14 +1,14 @@
 .analysis-workspace {
-  padding-top: 16px;
+  padding-top: var(--spacing-md);
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: var(--spacing-lg);
 }
 
 /* Stat Cards Row */
 .ws-stats-row {
   display: flex;
-  gap: 12px;
+  gap: var(--spacing-md);
   flex-wrap: wrap;
 }
 
@@ -18,45 +18,43 @@
   background: var(--canvas);
   border: 1px solid var(--hairline);
   border-radius: var(--rounded-lg);
-  padding: 14px 18px;
+  padding: 16px 20px;
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
 
-.ws-stat-warn { border-left: 3px solid #e65100; }
-.ws-stat-ok   { border-left: 3px solid #2e7d32; }
+.ws-stat-warn { border-left: 3px solid var(--accent-orange); }
+.ws-stat-ok   { border-left: 3px solid var(--accent-green); }
 .ws-stat-action { border-left: 3px solid var(--primary); }
 
 .ws-stat-value {
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 600;
-  color: var(--ink-deep);
+  color: var(--ink);
   line-height: 1.2;
 }
 
 .ws-stat-label {
-  font-size: 11px;
-  color: var(--stone);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
+  color: var(--ink-muted);
 }
 
 .ws-progress-bar {
-  height: 3px;
-  background: var(--hairline);
-  border-radius: 2px;
-  margin-top: 4px;
+  height: 4px;
+  background: var(--canvas-soft);
+  border-radius: var(--rounded-full);
+  margin-top: 6px;
   overflow: hidden;
 }
 
 .ws-progress-fill {
   height: 100%;
   background: var(--primary);
-  border-radius: 2px;
+  border-radius: var(--rounded-full);
+  transition: width 0.3s ease;
 }
 
-.ws-progress-fill.full { background: #2e7d32; }
+.ws-progress-fill.full { background: var(--accent-green); }
 
 /* Empty state */
 .ws-empty-state {
@@ -66,25 +64,12 @@
   text-align: center;
   gap: 12px;
   padding: 60px 24px;
-  color: var(--stone);
-}
-
-.ws-empty-state h3 {
-  font-size: 16px;
-  color: var(--slate);
-}
-
-.ws-empty-state p {
-  font-size: 14px;
-  max-width: 420px;
-  line-height: 1.6;
-  color: var(--stone);
 }
 
 /* Main layout */
 .ws-main {
   display: grid;
-  gap: 16px;
+  gap: var(--spacing-lg);
 }
 
 .ws-main-split {
@@ -95,19 +80,39 @@
   grid-template-columns: 1fr;
 }
 
-@media (max-width: 1000px) {
+@media (max-width: 1080px) {
   .ws-main-split { grid-template-columns: 1fr; }
 }
 
-/* Panel */
-.ws-issues-panel,
-.ws-report-panel {
-  background: var(--canvas);
-  border: 1px solid var(--hairline);
-  border-radius: var(--rounded-lg);
-  overflow: hidden;
+/* Column headers */
+.ws-column {
   display: flex;
   flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.ws-col-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Issue List */
+.ws-issue-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+/* Report Panel */
+.ws-report-panel {
+  display: flex;
+  flex-direction: column;
+  background: var(--canvas);
+  border-radius: var(--rounded-lg);
+  border: 1px solid var(--hairline);
+  overflow: hidden;
+  height: 600px;
 }
 
 .ws-panel-header {

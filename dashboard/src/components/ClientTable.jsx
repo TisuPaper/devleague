@@ -2,11 +2,11 @@ import React, { useState, useMemo } from 'react';
 import './ClientTable.css';
 
 const STATUS_CONFIG = {
-  review:    { label: 'Needs Review', className: 'badge-warning' },
-  ready:     { label: 'Report Ready', className: 'badge-ready' },
-  pending:   { label: 'Pending Docs', className: 'badge-pending' },
-  completed: { label: 'Completed',    className: 'badge-success' },
-  active:    { label: 'Active',       className: 'badge-active' },
+  review:    { label: 'Needs Review', dotClass: 'dot-orange' },
+  ready:     { label: 'Report Ready', dotClass: 'dot-sky' },
+  pending:   { label: 'Pending Docs', dotClass: 'dot-faint' },
+  completed: { label: 'Completed',    dotClass: 'dot-green' },
+  active:    { label: 'Active',       dotClass: 'dot-purple' },
 };
 
 const STATUS_FILTER_OPTIONS = [
@@ -22,7 +22,7 @@ const DocProgress = ({ documents }) => {
   const total = documents.length;
   return (
     <div className="doc-progress">
-      <span className={complete === total ? 'doc-count-complete' : 'doc-count'}>
+      <span className={complete === total ? 'doc-count-complete caption-bold' : 'doc-count caption'}>
         {complete}/{total}
       </span>
       <div className="doc-bar">
@@ -57,8 +57,8 @@ const ClientTable = ({ clients, onSelectClient }) => {
       {/* Header */}
       <div className="client-table-header">
         <div className="client-table-title-row">
-          <h2 className="client-table-title">Clients</h2>
-          <button id="btn-add-client" className="btn-primary">+ Add Client</button>
+          <h2 className="heading-3">Clients</h2>
+          <button id="btn-add-client" className="btn-utility">New Client</button>
         </div>
 
         {/* Filters */}
@@ -70,8 +70,8 @@ const ClientTable = ({ clients, onSelectClient }) => {
             <input
               id="client-search"
               type="text"
-              className="search-input"
-              placeholder="Search by domain, company or industry…"
+              className="text-input search-input"
+              placeholder="Search domain or company…"
               value={search}
               onChange={e => setSearch(e.target.value)}
               aria-label="Search clients"
@@ -83,7 +83,7 @@ const ClientTable = ({ clients, onSelectClient }) => {
 
           <select
             id="status-filter"
-            className="status-filter-select"
+            className="text-input status-filter-select"
             value={statusFilter}
             onChange={e => setStatusFilter(e.target.value)}
             aria-label="Filter by status"
@@ -100,17 +100,17 @@ const ClientTable = ({ clients, onSelectClient }) => {
         <table className="client-table" role="table">
           <thead>
             <tr>
-              <th>Company</th>
-              <th>Industry</th>
-              <th>Status</th>
-              <th>Documents</th>
-              <th>Last Activity</th>
+              <th className="eyebrow">Company</th>
+              <th className="eyebrow">Industry</th>
+              <th className="eyebrow">Status</th>
+              <th className="eyebrow">Documents</th>
+              <th className="eyebrow">Last Activity</th>
             </tr>
           </thead>
           <tbody>
             {filtered.length === 0 ? (
               <tr>
-                <td colSpan={5} className="empty-state">
+                <td colSpan={5} className="empty-state body-md">
                   No clients match your search.
                 </td>
               </tr>
@@ -129,16 +129,18 @@ const ClientTable = ({ clients, onSelectClient }) => {
                   >
                     <td>
                       <div className="company-cell">
-                        <span className="company-name">{client.companyName}</span>
-                        <span className="company-domain">{client.domain}</span>
+                        <span className="body-sm-medium">{client.companyName}</span>
+                        <span className="caption">{client.domain}</span>
                       </div>
                     </td>
-                    <td><span className="industry-tag">{client.industry}</span></td>
+                    <td><span className="industry-tag body-sm">{client.industry}</span></td>
                     <td>
-                      <span className={`status-badge ${statusCfg.className}`}>
-                        {statusCfg.label}
-                      </span>
+                      <div className="status-label">
+                        <span className={`status-dot ${statusCfg.dotClass}`} />
+                        <span className="body-sm">{statusCfg.label}</span>
+                      </div>
                     </td>
+
                     <td><DocProgress documents={client.documents} /></td>
                     <td>
                       <div className="activity-cell">

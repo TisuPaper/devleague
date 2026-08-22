@@ -4,11 +4,11 @@ import AnalysisWorkspace from './AnalysisWorkspace';
 import './ClientDetail.css';
 
 const STATUS_CONFIG = {
-  review:    { label: 'Needs Review', className: 'status-pill-warning' },
-  ready:     { label: 'Report Ready', className: 'status-pill-ready' },
-  pending:   { label: 'Pending Docs', className: 'status-pill-pending' },
-  completed: { label: 'Completed',    className: 'status-pill-success' },
-  active:    { label: 'Active',       className: 'status-pill-active' },
+  review:    { label: 'Needs Review', dotClass: 'dot-orange' },
+  ready:     { label: 'Report Ready', dotClass: 'dot-sky' },
+  pending:   { label: 'Pending Docs', dotClass: 'dot-faint' },
+  completed: { label: 'Completed',    dotClass: 'dot-green' },
+  active:    { label: 'Active',       dotClass: 'dot-purple' },
 };
 
 const SUB_TABS = [
@@ -22,15 +22,15 @@ const ClientDetail = ({ client, activeSubTab, setActiveSubTab, onSelectDifferent
     return (
       <div className="workspace-empty-state">
         <div className="workspace-empty-icon">
-          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" strokeWidth="1.2">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--ink-muted)" strokeWidth="1.2">
             <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>
           </svg>
         </div>
-        <h3>No client selected</h3>
-        <p>Go to the Clients tab, select a client from the list, and their full workspace will appear here.</p>
+        <h3 className="heading-3">No client selected</h3>
+        <p className="body-md">Go to the Clients tab, select a client from the list, and their full workspace will appear here.</p>
         <button
           id="btn-go-to-clients"
-          className="btn-primary"
+          className="btn-secondary"
           onClick={onSelectDifferent}
         >
           ← Go to Clients
@@ -56,7 +56,7 @@ const ClientDetail = ({ client, activeSubTab, setActiveSubTab, onSelectDifferent
         >
           Clients
         </button>
-        <span className="breadcrumb-sep" aria-hidden="true">›</span>
+        <span className="breadcrumb-sep" aria-hidden="true">/</span>
         <span className="breadcrumb-current">{client.domain}</span>
       </nav>
 
@@ -65,10 +65,13 @@ const ClientDetail = ({ client, activeSubTab, setActiveSubTab, onSelectDifferent
         <div className="client-header-top">
           <div className="client-header-info">
             <div className="client-name-row">
-              <h1 className="client-name">{client.companyName}</h1>
-              <span className={`status-pill ${statusCfg.className}`}>{statusCfg.label}</span>
+              <h1 className="heading-2">{client.companyName}</h1>
+              <div className="status-label">
+                <span className={`status-dot ${statusCfg.dotClass}`} />
+                <span className="body-sm">{statusCfg.label}</span>
+              </div>
             </div>
-            <p className="client-domain-line">{client.domain} · {client.industry}</p>
+            <p className="body-sm-medium text-slate">{client.domain} · {client.industry}</p>
           </div>
           <a
             id="btn-email-client"
@@ -83,26 +86,26 @@ const ClientDetail = ({ client, activeSubTab, setActiveSubTab, onSelectDifferent
         <div className="client-stats-row">
           <div className="client-stat">
             <span className="stat-value">{docsComplete}/{docsTotal}</span>
-            <span className="stat-label">Documents</span>
+            <span className="stat-label eyebrow">Documents</span>
           </div>
           <div className="stat-divider" />
           <div className="client-stat">
             <span className="stat-value">{client.lastActivityLabel}</span>
-            <span className="stat-label">Last Activity</span>
+            <span className="stat-label eyebrow">Last Activity</span>
           </div>
           <div className="stat-divider" />
           <div className="client-stat">
             <span className={`stat-value ${issueCount > 0 ? 'stat-issue' : 'stat-ok'}`}>
               {issueCount}
             </span>
-            <span className="stat-label">Issues Found</span>
+            <span className="stat-label eyebrow">Issues Found</span>
           </div>
           <div className="stat-divider" />
           <div className="client-stat">
             <span className="stat-value">
               {client.report.status === 'sent' ? 'Sent' : client.report.status === 'complete' ? 'Ready' : 'In Progress'}
             </span>
-            <span className="stat-label">Report Status</span>
+            <span className="stat-label eyebrow">Report Status</span>
           </div>
         </div>
       </div>
@@ -138,4 +141,5 @@ const ClientDetail = ({ client, activeSubTab, setActiveSubTab, onSelectDifferent
 };
 
 export default ClientDetail;
+
 

@@ -6,15 +6,16 @@
 
 /* Banner */
 .report-banner {
-  padding: 10px 20px;
-  font-size: 13px;
+  padding: 12px 24px;
+  font-size: 14px;
   font-weight: 500;
   flex-shrink: 0;
+  border-bottom: 1px solid var(--hairline);
 }
 
-.banner-sent    { background: #e8f5e9; color: #2e7d32; }
-.banner-ready   { background: #e3f2fd; color: #1565c0; }
-.banner-partial { background: #fff3e0; color: #e65100; }
+.banner-sent    { background: var(--canvas-soft); color: var(--accent-green); }
+.banner-ready   { background: var(--canvas-soft); color: var(--primary); }
+.banner-partial { background: var(--canvas-soft); color: var(--accent-orange); }
 
 /* Sections */
 .report-sections {
@@ -23,13 +24,13 @@
 }
 
 .report-section {
-  border-bottom: 1px solid var(--hairline-soft);
+  border-bottom: 1px solid var(--hairline);
 }
 
 .report-section:last-child { border-bottom: none; }
 
 .report-section-locked {
-  background: var(--surface-soft);
+  background: var(--canvas-soft);
 }
 
 .report-section-header {
@@ -40,14 +41,14 @@
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 14px 20px;
+  gap: 12px;
+  padding: 16px 24px;
   text-align: left;
-  transition: background 0.12s;
+  transition: background 0.1s;
 }
 
 .report-section-header:not(:disabled):hover {
-  background: var(--surface);
+  background: var(--canvas-soft);
 }
 
 .report-section-header:disabled {
@@ -60,26 +61,27 @@
 }
 
 .section-title {
-  font-size: 13px;
+  /* Inherits body-md */
+  font-size: 15px;
   font-weight: 500;
-  color: var(--ink-deep);
+  color: var(--ink);
   flex: 1;
 }
 
 .report-section-locked .section-title {
-  color: var(--stone);
+  color: var(--ink-muted);
 }
 
 .section-lock {
-  font-size: 11px;
-  color: var(--stone);
+  font-size: 12px;
+  color: var(--ink-faint);
   font-weight: 500;
 }
 
 .section-chevron {
   font-size: 14px;
-  color: var(--stone);
-  transition: transform 0.2s;
+  color: var(--ink-faint);
+  transition: transform 0.15s;
 }
 
 .section-chevron.open {
@@ -87,29 +89,30 @@
 }
 
 .report-section-body {
-  padding: 0 20px 16px;
-  border-top: 1px solid var(--hairline-soft);
-  background: var(--surface-soft);
+  padding: 0 24px 20px;
+  background: var(--canvas);
 }
 
 .report-section-content {
-  font-family: 'Inter', sans-serif;
-  font-size: 13px;
-  color: var(--charcoal);
-  line-height: 1.7;
+  font-family: inherit;
+  font-size: 15px;
+  color: var(--ink-secondary);
+  line-height: 1.6;
   white-space: pre-wrap;
   word-break: break-word;
-  margin: 14px 0 0;
+  margin: 12px 0 0;
+  padding-left: 28px; /* Indent under the toggle like Notion */
 }
 
 /* Report Actions */
 .report-actions {
   display: flex;
   justify-content: flex-end;
-  gap: 10px;
-  padding: 14px 20px;
+  gap: 12px;
+  padding: 16px 24px;
   border-top: 1px solid var(--hairline);
   flex-shrink: 0;
+  background: var(--canvas);
 }
 
 .report-actions .btn-primary:disabled {
@@ -118,10 +121,10 @@
 }
 
 .report-sent-footer {
-  padding: 12px 20px;
-  font-size: 13px;
-  color: #2e7d32;
+  padding: 16px 24px;
+  font-size: 14px;
+  color: var(--accent-green);
   font-weight: 500;
   border-top: 1px solid var(--hairline);
-  background: #f1f8f1;
+  background: var(--canvas-soft);
 }

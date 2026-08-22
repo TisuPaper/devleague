@@ -57,7 +57,7 @@ const AnalysisTab = () => {
                 <input type="text" className="text-input" defaultValue="Action Required: Missing Q3 Balance Sheet" />
               </div>
               <div className="form-group mt-4">
-                <textarea className="rich-text-editor email-body" defaultValue={`Dear Liam,\n\nWe have received your Q3 2026 Financial submissions. During our automated review, we found that the Q3 Balance Sheet is missing.\n\nPlease provide this required document (in PDF or Excel) at your earliest convenience to complete the review.\n\nBest regards,\nSarah Chen, Financial Analyst\nZenith AI`} />
+                <textarea className="rich-text-editor email-body" defaultValue={`Dear Liam,\n\nWe have received your Q3 2026 Financial submissions. During our automated review, we found that the Q3 Balance Sheet is missing.\n\nPlease provide this required document (in PDF or Excel) at your earliest convenience to complete the review.\n\nBest regards,\nSarah Chen, Financial Analyst\nExia`} />
               </div>
             </div>
 

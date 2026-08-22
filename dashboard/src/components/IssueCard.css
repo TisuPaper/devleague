@@ -1,10 +1,10 @@
 .issue-card {
-  padding: 16px 20px;
+  padding: 20px 24px;
   border-bottom: 1px solid var(--hairline);
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  transition: background 0.15s;
+  gap: 12px;
+  transition: background 0.1s;
 }
 
 .issue-card:last-child {
@@ -12,8 +12,7 @@
 }
 
 .issue-card-sent {
-  background: #f9fafb;
-  opacity: 0.8;
+  background: var(--canvas-soft);
 }
 
 .issue-card-header {
@@ -24,20 +23,17 @@
   flex-wrap: wrap;
 }
 
-.issue-type-badge {
-  font-size: 12px;
-  font-weight: 600;
-  padding: 3px 8px;
-  border-radius: var(--rounded-full);
+.issue-type-tag {
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
-.issue-type-missing  { background: #fff3e0; color: #e65100; }
-.issue-type-mismatch { background: #fff8e1; color: #7b3f00; }
+.issue-type-missing  { color: var(--accent-orange); }
+.issue-type-mismatch { color: var(--accent-brown); }
 
 .issue-sent-indicator {
-  font-size: 11px;
-  color: #2e7d32;
-  font-weight: 500;
+  color: var(--accent-green);
 }
 
 .issue-card-body {
@@ -47,25 +43,17 @@
 }
 
 .issue-problem {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--ink-deep);
-  line-height: 1.4;
+  /* Inherits body-sm-medium */
 }
 
 .issue-detail {
-  font-size: 12px;
-  color: var(--slate);
-  line-height: 1.5;
+  /* Inherits body-sm */
 }
 
 .issue-card-actions {
   display: flex;
-  gap: 8px;
+  gap: 12px;
   flex-wrap: wrap;
+  margin-top: 4px;
 }
 
-.issue-btn {
-  font-size: 12px;
-  padding: 7px 14px;
-}

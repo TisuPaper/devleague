@@ -4,14 +4,8 @@
 }
 
 .activity-card-header {
-  padding: 16px 20px;
+  padding: 20px 24px;
   border-bottom: 1px solid var(--hairline);
-}
-
-.activity-card-title {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--ink-deep);
 }
 
 .activity-list {
@@ -22,9 +16,14 @@
 .activity-item {
   display: flex;
   gap: 12px;
-  padding: 14px 20px;
-  border-bottom: 1px solid var(--hairline-soft);
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--hairline);
   align-items: flex-start;
+  transition: background 0.1s;
+}
+
+.activity-item:hover {
+  background: var(--canvas-soft);
 }
 
 .activity-item:last-child {
@@ -34,14 +33,14 @@
 .activity-dot {
   width: 8px;
   height: 8px;
-  border-radius: 50%;
+  border-radius: var(--rounded-full);
   margin-top: 5px;
   flex-shrink: 0;
 }
 
-.dot-success { background: #2e7d32; }
-.dot-issue   { background: #e65100; }
-.dot-info    { background: var(--stone); }
+.dot-success { background: var(--accent-green); }
+.dot-issue   { background: var(--accent-orange); }
+.dot-info    { background: var(--hairline-strong); }
 
 .activity-body {
   display: flex;
@@ -51,19 +50,20 @@
 }
 
 .activity-domain {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--primary);
-  font-family: monospace;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink);
 }
 
 .activity-action {
-  font-size: 13px;
-  color: var(--charcoal);
+  font-size: 14px;
+  color: var(--ink-secondary);
   line-height: 1.4;
 }
 
 .activity-timestamp {
-  font-size: 11px;
-  color: var(--muted);
+  font-size: 12px;
+  color: var(--ink-faint);
+  margin-top: 2px;
 }
+

@@ -1,30 +1,33 @@
 .dashboard-page {
-  padding: 24px;
-  max-width: 1400px;
+  padding: var(--spacing-xxl);
+  max-width: 1200px;
   margin: 0 auto;
 }
 
 .dashboard-layout {
-  display: grid;
-  grid-template-columns: 1fr 320px;
-  gap: 24px;
-  align-items: start;
+  display: flex;
+  gap: var(--spacing-xxl);
+  align-items: flex-start;
 }
 
 .dashboard-main {
-  min-width: 0;
+  flex: 1;
+  min-width: 0; /* allows child tables to shrink properly */
 }
 
 .dashboard-sidebar {
+  width: 280px;
+  flex-shrink: 0;
   position: sticky;
-  top: 24px;
+  top: var(--spacing-xxl);
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1080px) {
   .dashboard-layout {
-    grid-template-columns: 1fr;
+    flex-direction: column;
   }
   .dashboard-sidebar {
+    width: 100%;
     position: static;
   }
 }

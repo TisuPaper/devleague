@@ -1,57 +1,56 @@
 .client-detail {
-  padding: 24px;
-  max-width: 1400px;
+  padding: var(--spacing-xxl);
+  max-width: 1200px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: var(--spacing-lg);
 }
 
 /* Breadcrumb */
 .breadcrumb {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
 }
 
 .breadcrumb-link {
   background: none;
   border: none;
   font-family: inherit;
-  font-size: 13px;
-  color: var(--primary);
+  font-size: 14px;
+  color: var(--ink-muted);
   cursor: pointer;
   padding: 0;
-  text-decoration: underline;
-  text-underline-offset: 2px;
+  transition: color 0.1s;
 }
 
 .breadcrumb-link:hover {
-  color: var(--primary-pressed);
+  color: var(--ink);
 }
 
 .breadcrumb-sep {
-  font-size: 13px;
-  color: var(--muted);
+  font-size: 14px;
+  color: var(--hairline-strong);
 }
 
 .breadcrumb-current {
-  font-size: 13px;
-  color: var(--slate);
-  font-family: monospace;
+  font-size: 14px;
+  color: var(--ink);
+  font-weight: 500;
 }
 
 /* Client Header */
 .client-header {
-  padding: 20px 24px;
+  padding: var(--spacing-xl);
 }
 
 .client-header-top {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 20px;
-  gap: 16px;
+  margin-bottom: var(--spacing-xl);
+  gap: var(--spacing-md);
 }
 
 .client-header-info {
@@ -63,84 +62,69 @@
 .client-name-row {
   display: flex;
   align-items: center;
-  gap: 12px;
-}
-
-.client-name {
-  font-size: 22px;
-  font-weight: 600;
-  color: var(--ink-deep);
-}
-
-.client-domain-line {
-  font-size: 13px;
-  color: var(--stone);
-  font-family: monospace;
+  gap: var(--spacing-md);
 }
 
 .client-email-btn {
-  font-size: 13px;
+  font-size: 14px;
   flex-shrink: 0;
   text-decoration: none;
   display: inline-flex;
   align-items: center;
 }
 
-/* Status Pills */
-.status-pill {
-  font-size: 12px;
-  font-weight: 500;
-  padding: 3px 10px;
-  border-radius: var(--rounded-full);
+/* Status dots */
+.status-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
 }
-
-.status-pill-warning  { background: #fff3e0; color: #e65100; }
-.status-pill-ready    { background: #e8f5e9; color: #2e7d32; }
-.status-pill-pending  { background: var(--surface); color: var(--steel); border: 1px solid var(--hairline); }
-.status-pill-success  { background: #e3f2fd; color: #1565c0; }
-.status-pill-active   { background: #f3e5f5; color: #6a1b9a; }
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--rounded-full);
+  flex-shrink: 0;
+}
 
 /* Stats Row */
 .client-stats-row {
   display: flex;
   align-items: center;
   gap: 0;
-  background: var(--surface-soft);
+  background: var(--canvas);
   border: 1px solid var(--hairline);
-  border-radius: var(--rounded-md);
+  border-radius: var(--rounded-lg);
   overflow: hidden;
 }
 
 .client-stat {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   gap: 2px;
-  padding: 12px 24px;
+  padding: 16px 24px;
   flex: 1;
 }
 
 .stat-divider {
   width: 1px;
-  height: 36px;
+  height: 48px;
   background: var(--hairline);
   flex-shrink: 0;
 }
 
 .stat-value {
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 600;
-  color: var(--ink-deep);
+  color: var(--ink);
 }
 
-.stat-issue { color: #e65100; }
-.stat-ok    { color: #2e7d32; }
+.stat-issue { color: var(--accent-orange); }
+.stat-ok    { color: var(--accent-green); }
 
 .stat-label {
-  font-size: 11px;
-  color: var(--stone);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
+  color: var(--ink-muted);
 }
 
 /* Sub-tabs */

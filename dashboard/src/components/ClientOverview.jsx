@@ -2,15 +2,15 @@ import React from 'react';
 import './ClientOverview.css';
 
 const DOC_STATUS_CONFIG = {
-  complete: { label: 'Complete',         className: 'doc-status-complete' },
-  missing:  { label: 'Missing',          className: 'doc-status-missing' },
-  mismatch: { label: 'Format Mismatch',  className: 'doc-status-mismatch' },
+  complete: { label: 'Complete',         dotClass: 'dot-green' },
+  missing:  { label: 'Missing',          dotClass: 'dot-orange' },
+  mismatch: { label: 'Format Mismatch',  dotClass: 'dot-orange' },
 };
 
 const ACTIVITY_TYPE_CONFIG = {
-  success: 'act-dot-success',
-  issue:   'act-dot-issue',
-  info:    'act-dot-info',
+  success: 'dot-green',
+  issue:   'dot-orange',
+  info:    'dot-faint',
 };
 
 const ClientOverview = ({ client }) => {
@@ -19,8 +19,8 @@ const ClientOverview = ({ client }) => {
       {/* Documents */}
       <div className="overview-card card-base">
         <div className="overview-card-header">
-          <h3 className="overview-card-title">Documents Submitted</h3>
-          <span className="overview-card-sub">
+          <h3 className="heading-3">Documents Submitted</h3>
+          <span className="body-sm-medium text-slate">
             {client.documents.filter(d => d.status === 'complete').length} of {client.documents.length} required documents received
           </span>
         </div>
@@ -28,10 +28,10 @@ const ClientOverview = ({ client }) => {
         <table className="doc-table">
           <thead>
             <tr>
-              <th>Document Name</th>
-              <th>Type</th>
-              <th>Submitted</th>
-              <th>Status</th>
+              <th className="eyebrow">Document Name</th>
+              <th className="eyebrow">Type</th>
+              <th className="eyebrow">Submitted</th>
+              <th className="eyebrow">Status</th>
             </tr>
           </thead>
           <tbody>
@@ -39,11 +39,14 @@ const ClientOverview = ({ client }) => {
               const cfg = DOC_STATUS_CONFIG[doc.status] || DOC_STATUS_CONFIG.missing;
               return (
                 <tr key={doc.id} className={`doc-row ${doc.status !== 'complete' ? 'doc-row-issue' : ''}`}>
-                  <td className="doc-name">{doc.name}</td>
-                  <td className="doc-type">{doc.type || '—'}</td>
-                  <td className="doc-submitted">{doc.submitted || '—'}</td>
+                  <td className="doc-name body-sm-medium">{doc.name}</td>
+                  <td className="doc-type body-sm">{doc.type || '—'}</td>
+                  <td className="doc-submitted caption">{doc.submitted || '—'}</td>
                   <td>
-                    <span className={`doc-status-badge ${cfg.className}`}>{cfg.label}</span>
+                    <div className="status-label">
+                      <span className={`status-dot ${cfg.dotClass}`} />
+                      <span className="body-sm">{cfg.label}</span>
+                    </div>
                   </td>
                 </tr>
               );
@@ -55,12 +58,12 @@ const ClientOverview = ({ client }) => {
       {/* Activity Timeline */}
       <div className="overview-card card-base">
         <div className="overview-card-header">
-          <h3 className="overview-card-title">Client Activity</h3>
+          <h3 className="heading-3">Client Activity</h3>
         </div>
         <ul className="activity-timeline">
           {client.activity.map(item => (
             <li key={item.id} className="timeline-item">
-              <div className={`timeline-dot ${ACTIVITY_TYPE_CONFIG[item.type] || 'act-dot-info'}`} />
+              <div className={`timeline-dot ${ACTIVITY_TYPE_CONFIG[item.type] || 'dot-faint'}`} />
               <div className="timeline-body">
                 <p className="timeline-note">{item.note}</p>
                 <span className="timeline-time">{item.timestamp}</span>

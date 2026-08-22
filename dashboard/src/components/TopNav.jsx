@@ -4,6 +4,11 @@ import './TopNav.css';
 const TopNav = ({ activeTab, setActiveTab, selectedClient }) => {
   return (
     <nav className="top-nav" role="navigation" aria-label="Main navigation">
+      <div className="top-nav-brand">
+        <div className="exia-logo">E</div>
+        <span className="exia-title">Exia</span>
+      </div>
+      
       <div className="top-nav-tabs">
         <button
           id="tab-clients"
